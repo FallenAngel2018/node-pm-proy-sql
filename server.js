@@ -10,9 +10,10 @@ var app = express()
 
 app.use( bodyParser.json() )
 app.use( bodyParser.urlencoded({extended:false}) )
+// Redirecciona hacia un index.html 
 app.use( config.CLIENT_URL, express.static( config.CLIENT_DIR ) )
 
 routes( app )
 
 app.listen( config.PORT )
-console.log( `La aplicacion esta escuchando en el ${process.env.HOST || "localhost"}:${config.PORT}.` )
+console.log( `La aplicacion esta escuchando en el ${process.env.HOSTNAME || "localhost"}:${config.PORT}.` )
