@@ -15,4 +15,4 @@ app.use( config.CLIENT_URL, express.static( config.CLIENT_DIR ) )
 routes( app )
 
 app.listen( config.PORT )
-console.log( `La aplicacion esta escuchando en el http://localhost:${config.PORT}.` )
+console.log( `La aplicacion esta escuchando en el ${process.env.HOST || "localhost"}:${config.PORT}.` )
