@@ -41,6 +41,8 @@ routes.delete('/', function(req, res) {
 
 // #region Complementary methods
 
+require("dotenv").config();
+
 routes.get('/get_usrs', function(req, res) {
     const filtroUsr = req.body.usr_pc_name || req.query.usr_pc_name || null
     validate_user(req, res)
@@ -71,9 +73,11 @@ async function validate_user(req, res) {
         // console.log('address: %j family: IPv%s', address, family);
     })
     
+    // Server remote IP Address
     const ip_addrs = req.socket.remoteAddress || req.headers['x-forwarded-for'] || "None remoteAddress?"
     
     // Fuente: https://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
+    // Client IP Address
     const proxy_ip_addrs = req.headers['x-forwarded-for'] || "None proxy addr" // For proxy ip's
     var proxy_domain_name = ""
     dns.lookup(proxy_ip_addrs, options, (err, address, family) => {
@@ -85,14 +89,51 @@ async function validate_user(req, res) {
     // Fuente: https://stackoverflow.com/questions/42151493/how-to-get-client-computer-name-in-node-js
     // Fuente: https://stackoverflow.com/questions/65073538/limit-execution-time-of-await-dns-reverse-function-js
     const timeout = (delay, message) => new Promise((_, reject) => setTimeout(reject, delay, message));
-    const delay = 8000;
+    const delay = 10000;
     var host = ""
     try {
         // proxy_ip_addrs = 186.66.23.15
+        // Client hostname
         host = await Promise.race([dns.reverse(proxy_ip_addrs, function(err, domains) {
             proxy_domain_name = domains || "None client name"
         }), timeout(delay, `DNS resolution timed out after ${delay} ms`)]);
         // console.log("host:",host);
+    }
+    catch (e) {
+        console.error(e);
+    }
+
+    
+    const axios = require('axios')
+    let is_vpn = ""
+    let isp_name = ""
+    
+    const abstract_process = await axios.get(`https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.Abstract_APIKEY}`)
+    .then(response => {
+        data = response.data
+        console.log(response.data);
+
+        is_vpn = data["security"]["is_vpn"]
+        isp_name = data["connection"]["isp_name"]
+        timezone_name = data["timezone"]["name"]
+        usr_city = data["city"]
+        
+
+        // console.log("data[connection]:",data["connection"]);
+        console.log("isp_name:",isp_name);
+        console.log("timezone_name:",timezone_name);
+        console.log("usr_city:",usr_city);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+
+    try {
+        // Otra forma de usar que funciona, ahora usando timeout
+        await Promise.race([abstract_process, 
+            timeout(delay, `DNS resolution timed out after ${delay} ms`)]);
+
+        // await Promise.race([abstract_process]);
     }
     catch (e) {
         console.error(e);
@@ -107,33 +148,40 @@ async function validate_user(req, res) {
     var http = require('http');
 
     // Obtiene la ip pública del servidor
-    await http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
-        resp.on('data', function(public_ip) {
-            console.log("Your Computer Name is:",hostname)
-            console.log("Your Computer/Server IP Address is:",pc_addr)
-            console.log("Your IP Address family is:",family_addr)
-            console.log(`My public IP address is: ${public_ip}`)
-            console.log("My remote IP Address is:",ip_addrs)
-            console.log("User/Client proxy IP Address is:",proxy_ip_addrs)
-            console.log("User/Client domain name is:",proxy_domain_name)
-            console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
+    try {
+        http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
+            resp.on('data', function(public_ip) {
+                console.log("Your Computer Name is:",hostname)
+                console.log("Your Computer/Server IP Address is:",pc_addr)
+                console.log("Your IP Address family is:",family_addr)
+                console.log(`My public IP address is: ${public_ip}`)
+                console.log("My remote IP Address is:",ip_addrs)
+                console.log("User/Client proxy IP Address is:",proxy_ip_addrs)
+                console.log("User/Client domain name is:",proxy_domain_name)
+                console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
+                console.log("Is User using VPN? is_vpn:",is_vpn);
 
-            const emp = {
-                "hostname": hostname,
-                "ip_addr": pc_addr,
-                "remote_ip_addr": ip_addrs,
-                "public_ip_addr": public_ip.toString(), // sin toString() <Buffer 31 38 36 2e 36 36 2e 32 33 2e 31 35>
-                "proxy_ip_addr": proxy_ip_addrs,
-                "proxy_domain_name": proxy_domain_name,
-                "checked_time": dt_string,
-            }
+                const emp = {
+                    "hostname": hostname,
+                    "ip_addr": pc_addr,
+                    "remote_ip_addr": ip_addrs,
+                    "public_ip_addr": public_ip.toString(), // sin toString() <Buffer 31 38 36 2e 36 36 2e 32 33 2e 31 35>
+                    "proxy_ip_addr": proxy_ip_addrs,
+                    "proxy_domain_name": proxy_domain_name,
+                    "checked_time": dt_string,
+                }
+    
+                controller.validate_user( emp )
 
-            controller.validate_user( emp )
-                // .then((data) => response.success(req, res, data))
-                // .catch((error) => response.error(req, res, error) )
-
+                    // .then((data) => response.success(req, res, data))
+                    // .catch((error) => response.error(req, res, error) )
+    
+            });
         });
-    });
+    }
+    catch (e) {
+        console.error(e);
+    }
     
 }
 
