@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const config = require('./config')
 const routes = require('./network/routes')
 
-require("dotenv").config();
+// require("dotenv").config();
 
 var app = express()
 

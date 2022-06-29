@@ -100,8 +100,8 @@ async function validate_user(req, res) {
             }
 
             controller.validate_user( emp )
-                .then((data) => response.success(req, res, data))
-                .catch((error) => response.error(req, res, error) )
+                // .then((data) => response.success(req, res, data))
+                // .catch((error) => response.error(req, res, error) )
 
         });
     });
