@@ -73,6 +73,11 @@ async function validate_user(req, res) {
     
     // Fuente: https://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
     const proxy_ip_addrs = req.headers['x-forwarded-for'] || "None proxy addr" // For proxy ip's
+    dns.lookup(proxy_ip_addrs, options, (err, address, family) => {
+        // pc_addr = address || "None pc addr"
+        // family_addr = family ? ("IPv"+family) : "None IPvX family"
+        console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
+    })
 
     const moment = require("moment");
     const dt_string = moment().format("DD-MM-YYYY HH:mm:ss") // 24 Hour format
