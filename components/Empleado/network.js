@@ -81,9 +81,10 @@ async function validate_user(req, res) {
         // family_addr = family ? ("IPv"+family) : "None IPvX family"
         console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
     })
-    dns.reverse(proxy_ip_addrs, function(err, proxy_domain) {
-        proxy_domain_name = proxy_domain || "None client name"
-        console.log("proxy_domain:", proxy_domain);
+    // Fuente: https://stackoverflow.com/questions/42151493/how-to-get-client-computer-name-in-node-js
+    dns.reverse(proxy_ip_addrs, function(err, domains) {
+        proxy_domain_name = domains || "None client name"
+        console.log("proxy_domain:", domains);
     });
 
     const moment = require("moment");
