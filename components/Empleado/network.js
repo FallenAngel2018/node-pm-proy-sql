@@ -22,6 +22,8 @@ routes.get('/', function(req, res) {
 
 routes.post('/validate_user', function(req, res) {
     validate_user(req, res)
+        .then((data) => response.success(req, res, data))
+        .catch((error) => response.error(req, res, error) )
 })
 
 routes.patch('/', function(req, res) {
