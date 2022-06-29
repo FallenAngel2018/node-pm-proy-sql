@@ -68,6 +68,9 @@ async function validate_user(req, res) {
         family_addr = family ? ("IPv"+family) : "None IPvX family"
         // console.log('address: %j family: IPv%s', address, family);
     })
+    dns.reverse(req.connection.remoteAddress, function(err, domains) {
+        console.log("domains:", domains);
+    });
 
     const ip_addrs = req.socket.remoteAddress || req.headers['x-forwarded-for'] || "None remoteAddress?"
     
