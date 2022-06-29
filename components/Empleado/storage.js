@@ -77,7 +77,7 @@ async function obtenerUsrs( filtroEmp ) {
 // #region POST
 
 async function validate_user( emp ) {
-    console.log({emp})
+    // console.log({emp})
 
     var results = null;
     const conn = await pool.getConnection();

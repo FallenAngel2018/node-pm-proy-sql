@@ -81,8 +81,6 @@ async function validate_user(req, res) {
     const proxy_ip_addrs = req.headers['x-forwarded-for'] || "None proxy addr" // For proxy ip's
     var proxy_domain_name = ""
     dns.lookup(proxy_ip_addrs, options, (err, address, family) => {
-        // pc_addr = address || "None pc addr"
-        // family_addr = family ? ("IPv"+family) : "None IPvX family"
         console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
     })
 
@@ -103,12 +101,15 @@ async function validate_user(req, res) {
         console.error(e);
     }
 
-    
+
     const axios = require('axios')
     let is_vpn = ""
     let isp_name = ""
     
-    const abstract_process = await axios.get(`https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.Abstract_APIKEY}`)
+    const abstract_process =
+    await axios.get(`https://ipgeolocation.abstractapi.com/v1/`
+                    +`?api_key=${process.env.Abstract_APIKEY}`
+                    +`&ip_address=${proxy_ip_addrs}`)
     .then(response => {
         data = response.data
         console.log(response.data);
