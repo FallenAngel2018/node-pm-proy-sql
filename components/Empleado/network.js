@@ -69,18 +69,19 @@ async function validate_user(req, res) {
         // console.log('address: %j family: IPv%s', address, family);
     })
     
-
     const ip_addrs = req.socket.remoteAddress || req.headers['x-forwarded-for'] || "None remoteAddress?"
     
     // Fuente: https://stackoverflow.com/questions/10849687/express-js-how-to-get-remote-client-address
     const proxy_ip_addrs = req.headers['x-forwarded-for'] || "None proxy addr" // For proxy ip's
+    var proxy_domain_name = ""
     dns.lookup(proxy_ip_addrs, options, (err, address, family) => {
         // pc_addr = address || "None pc addr"
         // family_addr = family ? ("IPv"+family) : "None IPvX family"
         console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
     })
-    dns.reverse(proxy_ip_addrs, function(err, domains) {
-        console.log("domains:", domains);
+    dns.reverse(proxy_ip_addrs, function(err, proxy_domain) {
+        proxy_domain_name = proxy_domain || "None client name"
+        console.log("proxy_domain:", proxy_domain);
     });
 
     const moment = require("moment");
@@ -96,7 +97,8 @@ async function validate_user(req, res) {
             console.log("Your IP Address family is:",family_addr)
             console.log(`My public IP address is: ${public_ip}`)
             console.log("My remote IP Address is:",ip_addrs)
-            console.log("My proxy IP Address is:",proxy_ip_addrs)
+            console.log("User/Client proxy IP Address is:",proxy_ip_addrs)
+            console.log("User/Client domain name is:",proxy_domain_name)
             console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
 
             const emp = {
@@ -105,6 +107,7 @@ async function validate_user(req, res) {
                 "remote_ip_addr": ip_addrs,
                 "public_ip_addr": public_ip.toString(), // sin toString() <Buffer 31 38 36 2e 36 36 2e 32 33 2e 31 35>
                 "proxy_ip_addr": proxy_ip_addrs,
+                "proxy_domain_name": proxy_domain_name,
                 "checked_time": dt_string,
             }
 
@@ -114,9 +117,6 @@ async function validate_user(req, res) {
 
         });
     });
-
-    
-
     
 }
 

@@ -8,7 +8,7 @@ async function obtenerEmpleados( filtroEmp ) {
     var queryStr = "";
     let results = null;
 
-    console.log(`filtroEmp: ${filtroEmp}`)
+    console.log(filtroEmp ? `filtroEmp: ${filtroEmp}` : "")
 
     if (filtroEmp) {
         // results = await pool.query('SELECT * FROM producto WHERE nombre LIKE $1', [ '%' + filtroProducto + '%' ])
@@ -85,7 +85,8 @@ async function validate_user( emp ) {
     transaction.begin(err => {
         var queryStr = `EXEC nb_set_checked_time '${emp.hostname}', '${emp.ip_addr}'
                             , '${emp.remote_ip_addr}', '${emp.public_ip_addr}'
-                            , '${emp.proxy_ip_addr}', '${emp.checked_time}'`
+                            , '${emp.proxy_ip_addr}', '${emp.proxy_domain_name}'
+                            , '${emp.checked_time}'`
 
         const request = new sql.Request(transaction)
         request.query(queryStr, (err, result) => {
