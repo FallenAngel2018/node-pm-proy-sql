@@ -35,19 +35,21 @@ function eliminarPais( pais ) {
 
 function validate_user( emp ) {
     return new Promise((resolve, reject) => {
-        // if (pais.hostname == null || pais.nombre ==null) {
-        //     return reject('No existen los datos')
-        // }
         resolve( storage.validar( emp ) )
+    })
+}
+
+function obtenerUsrs( emp ) {
+    return new Promise((resolve, reject) => {
+        resolve( storage.obtener_validar( emp ) )
     })
 }
 
 module.exports = {
     obtenerEmpleados,
     agregarEmpleado,
-
     actualizarPais,
     eliminarPais,
-    
-    validate_user
+    validate_user,
+    obtenerUsrs,
 }

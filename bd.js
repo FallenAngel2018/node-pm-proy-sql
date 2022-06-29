@@ -1,6 +1,6 @@
 
 const sql = require('mssql')
-require("dotenv").config();
+// require("dotenv").config();
 
 const dbSettings = {
     user: process.env.SQL_SVR_2_USER_ID,

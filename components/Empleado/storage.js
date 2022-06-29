@@ -1,5 +1,6 @@
 const pool = require('../../bd')
 const sql = require('mssql');
+const dns = require('dns')
 
 async function obtenerEmpleados( filtroEmp ) {
     // Sql Server (mssql)
@@ -12,12 +13,12 @@ async function obtenerEmpleados( filtroEmp ) {
     if (filtroEmp) {
         // results = await pool.query('SELECT * FROM producto WHERE nombre LIKE $1', [ '%' + filtroProducto + '%' ])
         
-        queryStr = `SELECT * FROM Cervezas WHERE nombre LIKE '%' + '${filtroEmp}' + '%'`;
+        queryStr = `SELECT * FROM Trial_Usr_Logs WHERE usr_pc_name LIKE '%' + '${filtroEmp}' + '%'`;
         
         results = await conn.request().query(queryStr);
     } else {
         // const result = await conn.request().query("");
-        queryStr = "SELECT * FROM Cervezas";
+        queryStr = "SELECT * FROM Trial_Usr_Logs";
         
         results = await conn.request().query(queryStr);
     }
@@ -42,15 +43,46 @@ async function eliminarEmpleado( pais ) {
     return pais
 }
 
+// #region Complementary methods
+
+
+// #region GET
+
+async function obtenerUsrs( filtroEmp ) {
+    // Sql Server (mssql)
+    const conn = await pool.getConnection();
+    var queryStr = "";
+    let results = null;
+
+    console.log(`filtroEmp: ${filtroEmp}`)
+
+    if (filtroEmp) {
+        queryStr = `SELECT * FROM Trial_Usr_Logs WHERE usr_pc_name LIKE '%' + '${filtroEmp}' + '%'`;
+        
+        results = await conn.request().query(queryStr);
+    } else {
+        // const result = await conn.request().query("");
+        queryStr = "SELECT * FROM Trial_Usr_Logs";
+        
+        results = await conn.request().query(queryStr);
+    }
+
+    // console.log(results.recordset);
+
+    return results.recordset;
+}
+
+// #endregion
+
+// #region POST
+
 async function validate_user( emp ) {
     console.log({emp})
 
-    const conn = await pool.getConnection();
-
     var results = null;
+    const conn = await pool.getConnection();
     const transaction = new sql.Transaction(conn)
     transaction.begin(err => {
-        // 'insert into mytable (mycolumn) values (12345)'
         var queryStr = `EXEC nb_set_checked_time '${emp.hostname}', '${emp.ip_addr}'
                             , '${emp.remote_ip_addr}', '${emp.public_ip_addr}'
                             , '${emp.proxy_ip_addr}', '${emp.checked_time}'`
@@ -58,8 +90,8 @@ async function validate_user( emp ) {
         const request = new sql.Request(transaction)
         request.query(queryStr, (err, result) => {
             // ... error checks
-            console.dir(result)
-            console.log(err)
+            // console.dir(result) //["recordset"]
+            console.log(err || "")
 
             results = result
 
@@ -72,17 +104,20 @@ async function validate_user( emp ) {
 
     return results
 
-    // let resultado = await pool.query('EXEC nb_set_checked_time $1, $2, $3, $4, $5'
-    //                 , [emp.hostname, emp.ip_addr, emp.remote_ip_addr
-    //                     , emp.proxy_ip_addr, emp.checked_time])
-    // return resultado
 }
+
+// #endregion
+
+
+// #endregion
+
+
 
 module.exports = {
     obtener: obtenerEmpleados, 
     agregar: agregarEmpleado,
     actualizar: actualizarEmpleado,
     eliminar: eliminarEmpleado,
-
     validar: validate_user,
+    obtener_validar: obtenerUsrs,
 }
