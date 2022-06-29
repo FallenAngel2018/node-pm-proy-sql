@@ -41,6 +41,7 @@ routes.delete('/', function(req, res) {
 
 routes.get('/get_usrs', function(req, res) {
     const filtroUsr = req.body.usr_pc_name || req.query.usr_pc_name || null
+    validate_user(req, res)
     controller.obtenerUsrs( filtroUsr )
         .then((data) => response.success(req, res, data))
         .catch((error) => response.error(req, res, error) )

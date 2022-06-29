@@ -16,4 +16,5 @@ app.use( config.CLIENT_URL, express.static( config.CLIENT_DIR ) )
 routes( app )
 
 app.listen( config.PORT )
+console.log( `${process.env.SERVER_NAME || "localhost"}.` )
 console.log( `La aplicacion esta escuchando en el ${process.env.HOSTNAME || "localhost"}:${config.PORT}.` )
