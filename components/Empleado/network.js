@@ -68,9 +68,7 @@ async function validate_user(req, res) {
         family_addr = family ? ("IPv"+family) : "None IPvX family"
         // console.log('address: %j family: IPv%s', address, family);
     })
-    dns.reverse(req.connection.remoteAddress, function(err, domains) {
-        console.log("domains:", domains);
-    });
+    
 
     const ip_addrs = req.socket.remoteAddress || req.headers['x-forwarded-for'] || "None remoteAddress?"
     
@@ -81,6 +79,9 @@ async function validate_user(req, res) {
         // family_addr = family ? ("IPv"+family) : "None IPvX family"
         console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
     })
+    dns.reverse(proxy_ip_addrs, function(err, domains) {
+        console.log("domains:", domains);
+    });
 
     const moment = require("moment");
     const dt_string = moment().format("DD-MM-YYYY HH:mm:ss") // 24 Hour format
