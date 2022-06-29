@@ -65,7 +65,7 @@ async function validate_user(req, res) {
         // Set true to see every IP address avaliable in your pc
         all: false,
     };
-    dns.lookup(hostname, options, (err, address, family) => {
+    await dns.lookup(hostname, options, (err, address, family) => {
         pc_addr = address || "None pc addr"
         family_addr = family ? ("IPv"+family) : "None IPvX family"
         // console.log('address: %j family: IPv%s', address, family);
@@ -81,18 +81,32 @@ async function validate_user(req, res) {
         // family_addr = family ? ("IPv"+family) : "None IPvX family"
         console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
     })
+
     // Fuente: https://stackoverflow.com/questions/42151493/how-to-get-client-computer-name-in-node-js
-    dns.reverse(proxy_ip_addrs, function(err, domains) {
-        proxy_domain_name = domains || "None client name"
-        console.log("proxy_domain:", domains);
-    });
+    // Fuente: https://stackoverflow.com/questions/65073538/limit-execution-time-of-await-dns-reverse-function-js
+    const timeout = (delay, message) => new Promise((_, reject) => setTimeout(reject, delay, message));
+    const delay = 8000;
+    var host = ""
+    try {
+        // proxy_ip_addrs = 186.66.23.15
+        host = await Promise.race([dns.reverse(proxy_ip_addrs, function(err, domains) {
+            proxy_domain_name = domains || "None client name"
+        }), timeout(delay, `DNS resolution timed out after ${delay} ms`)]);
+        // console.log("host:",host);
+    }
+    catch (e) {
+        console.error(e);
+    }
+
 
     const moment = require("moment");
     const dt_string = moment().format("DD-MM-YYYY HH:mm:ss") // 24 Hour format
 
 
+    // Se muestran los datos y se envían
     var http = require('http');
 
+    // Obtiene la ip pública del servidor
     await http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
         resp.on('data', function(public_ip) {
             console.log("Your Computer Name is:",hostname)
