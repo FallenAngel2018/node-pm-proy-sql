@@ -9,6 +9,11 @@ const dbSettings = {
     server: process.env.SQL_SVR_2_SERVER_NAME,
     database: process.env.SQL_SVR_2_DB_NAME,
     port: 1433,
+    pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 25000
+    },
     options: {
         encrypt: true, // for azure
         trustServerCertificate: true, // change to true for local dev / self signed certs

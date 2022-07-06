@@ -6,30 +6,30 @@ function obtenerEmpleados( filtroEmp ) {
     })
 }
 
-function agregarEmpleado( pais ) {
+function agregarEmpleado( empleado ) {
     return new Promise((resolve, reject) => {
-        if (pais.id == null || pais.nombre ==null) {
-            return reject('No existen los datos')
+        if (empleado.cedula == null || empleado.cedula == "") {
+            return reject('Ingrese una cédula')
         }
-        resolve( storage.agregar( pais ) )
+        resolve( storage.agregar( empleado ) )
     })
 }
 
-function actualizarPais( pais ) {
+function actualizarEmpleado( empleado ) {
     return new Promise((resolve, reject) => {
-        if (pais.id == null || pais.nombre ==null) {
-            return reject( 'No existen los datos.' )
+        if (empleado.cedula == null || empleado.cedula == "") {
+            return reject('Ingrese una cédula')
         }
-        resolve( storage.actualizar( pais ) )
+        resolve( storage.actualizar( empleado ) )
     })
 }
 
-function eliminarPais( pais ) {
+function eliminarEmpleado( empleado ) {
     return new Promise((resolve, reject) => {
-        if (pais.id == null) {
-            return reject('No existen los datos.')
+        if (empleado.cedula == null || empleado.cedula == "") {
+            return reject('Ingrese una cédula')
         }
-        resolve( storage.eliminar( pais ) )
+        resolve( storage.eliminar( empleado ) )
     })
 }
 
@@ -48,8 +48,9 @@ function obtenerUsrs( emp ) {
 module.exports = {
     obtenerEmpleados,
     agregarEmpleado,
-    actualizarPais,
-    eliminarPais,
+    actualizarEmpleado,
+
+    eliminarEmpleado,
     validate_user,
     obtenerUsrs,
 }

@@ -1,42 +1,58 @@
 const express = require('express')
 const controller = require('./controller')
 const response = require('../../network/response')
-
+const usrs = require('../Users/other_methods')
 const routes = express.Router()
 
 routes.get('/', function(req, res) {
-    const filtroPais = req.body.usr_pc_name || req.query.usr_pc_name || null
+    const filtroEmpleado = req.body.emp_nombre || req.query.emp_nombre || null
 
-    validate_user(req, res)
+    // usrs.validar(req, res, entidad, "/")
     
-    controller.obtenerEmpleados( filtroPais )
-        .then((data) => response.success(req, res, data))
+    controller.obtenerEmpleados( filtroEmpleado )
+        .then((data) => response.success(req, res, data, response.success_message()))
         .catch((error) => response.error(req, res, error) )
 })
 
-// routes.post('/', function(req, res) {
-//     controller.agregarPais( req.body )
-//         .then((data) => response.success(req, res, data))
-//         .catch((error) => response.error(req, res, error) )
-// })
+routes.post('/agregar', function(req, res) {
+
+    // usrs.validar(req, res, entidad, "/agregar")
+
+    controller.agregarEmpleado( req.body )
+        .then((data) => response.success(req, res, data, response.success_message()))
+        .catch((error) => response.error(req, res, error) )
+})
+
+routes.patch('/actualizar', function(req, res) {
+    
+    // usrs.validar(req, res, entidad, "/actualizar")
+
+    controller.actualizarEmpleado( req.body )
+        .then((data) => response.success(req, res, data, response.success_message()))
+        .catch((error) => response.error(req, res, error) )
+
+})
+
+routes.delete('/eliminar', function(req, res) {
+
+    // usrs.validar(req, res, entidad, "/eliminar")
+
+    controller.eliminarEmpleado( req.body )
+        .then((data) => response.success(req, res, data, response.success_message()))
+        .catch((error) => response.error(req, res, error) )
+})
 
 routes.post('/validate_user', function(req, res) {
-    validate_user(req, res)
-        .then((data) => response.success(req, res, data))
+    usrs.validar(req, res, entidad, "/validate_user")
+    // validate_user(req, res)
+        .then((data) => response.success(req, res, data, "Usuario validado"))
         .catch((error) => response.error(req, res, error) )
 })
 
-routes.patch('/', function(req, res) {
-    controller.actualizarPais( req.body )
-        .then((data) => response.success(req, res, data))
-        .catch((error) => response.error(req, res, error) )
-})
+const entidad = "Empleado"
 
-routes.delete('/', function(req, res) {
-    controller.eliminarPais( req.body )
-        .then((data) => response.success(req, res, data))
-        .catch((error) => response.error(req, res, error) )
-})
+module.exports = routes
+
 
 
 // #region Complementary methods
@@ -51,6 +67,7 @@ routes.get('/get_usrs', function(req, res) {
         .catch((error) => response.error(req, res, error) )
 })
 
+// Falta agregar origen del request (Metodo agregar, actualizar...)
 async function validate_user(req, res) {
     const os = require('os')
     const dns = require('dns');
@@ -106,6 +123,8 @@ async function validate_user(req, res) {
     let is_vpn = ""
     let isp_name = ""
     
+    // Sin &ip_address devuelve los datos de conexión
+    // del server en el que la app se ejecuta
     const abstract_process =
     await axios.get(`https://ipgeolocation.abstractapi.com/v1/`
                     +`?api_key=${process.env.Abstract_APIKEY}`
@@ -121,9 +140,9 @@ async function validate_user(req, res) {
         
 
         // console.log("data[connection]:",data["connection"]);
-        console.log("isp_name:",isp_name);
+        // console.log("isp_name:",isp_name);
         console.log("timezone_name:",timezone_name);
-        console.log("usr_city:",usr_city);
+        // console.log("usr_city:",usr_city);
     })
     .catch(error => {
         console.log(error);
@@ -161,6 +180,8 @@ async function validate_user(req, res) {
                 console.log("User/Client domain name is:",proxy_domain_name)
                 console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
                 console.log("Is User using VPN? is_vpn:",is_vpn);
+                console.log("User city:",usr_city);
+                console.log("User IPS name:",isp_name);
 
                 const emp = {
                     "hostname": hostname,
@@ -188,5 +209,3 @@ async function validate_user(req, res) {
 
 // #endregion
 
-
-module.exports = routes
