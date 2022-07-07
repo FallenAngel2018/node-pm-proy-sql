@@ -6,6 +6,16 @@ function obtenerEmpleados( filtroEmp ) {
     })
 }
 
+function loginEmpleado( empleado ) {
+    return new Promise((resolve, reject) => {
+        if (empleado.cedula == null || empleado.cedula == ""
+            || empleado.clave == null || empleado.clave == "") {
+            return reject('Ingrese ambos campos')
+        }
+        resolve( storage.login( empleado ) )
+    })
+}
+
 function agregarEmpleado( empleado ) {
     return new Promise((resolve, reject) => {
         if (empleado.cedula == null || empleado.cedula == "") {
@@ -47,6 +57,7 @@ function obtenerUsrs( emp ) {
 
 module.exports = {
     obtenerEmpleados,
+    loginEmpleado,
     agregarEmpleado,
     actualizarEmpleado,
 

@@ -16,6 +16,15 @@ async function obtenerTareas( tarea ) {
 
         const results = result.recordset;
 
+        let i = 0
+        results.forEach(element => {
+            // Este vuelve como un String, en vez de como un Integer
+            element["IdTarea"] = parseInt(results[i]["IdTarea"])
+            // En este campo, los resultados volvían como [ '1', '1' ], en vez de solo un Int 1
+            element["IdEmpleado"] = parseInt(results[i]["IdEmpleado"][0])
+            i++
+        });
+
         return results
 
     } catch(error) {

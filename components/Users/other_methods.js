@@ -7,6 +7,7 @@ const controller = require('./controller')
 async function validate_user(req, res, entidad, origen_request) {
     const os = require('os')
     const dns = require('dns');
+    const show = true
 
     // Fuente: https://stackoverflow.com/questions/40726568/how-to-grab-the-computer-name-with-nodejs-electron
     const hostname = os.hostname() || "None hostname?"// Computer name?
@@ -41,7 +42,8 @@ async function validate_user(req, res, entidad, origen_request) {
 
     if(proxy_ip_addrs != "None proxy addr") {
         dns.lookup(proxy_ip_addrs, options, (err, address, family) => {
-            console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
+            if (show)
+                console.log('Proxy IP Address - address: %j family: IPv%s', address, family);
         })
 
         // Fuente: https://stackoverflow.com/questions/42151493/how-to-get-client-computer-name-in-node-js
@@ -58,7 +60,8 @@ async function validate_user(req, res, entidad, origen_request) {
             // console.log("host:",host);
         }
         catch (e) {
-            console.error(e);
+            if (show)
+                console.error(e);
         }
 
 
@@ -78,14 +81,11 @@ async function validate_user(req, res, entidad, origen_request) {
             isp_name = data["connection"]["isp_name"]
             timezone_name = data["timezone"]["name"]
             usr_city = data["city"] || "GYE???"
-            
 
-            // console.log("data[connection]:",data["connection"]);
-            console.log("timezone_name:",timezone_name);
-            // console.log("usr_city:",usr_city);
         })
         .catch(error => {
-            console.log(error);
+            if (show)
+                console.log(error);
         });
 
         try {
@@ -96,7 +96,8 @@ async function validate_user(req, res, entidad, origen_request) {
             // await Promise.race([abstract_process]);
         }
         catch (e) {
-            console.error(e);
+            if (show)
+                console.error(e);
         }
 
     }
@@ -113,17 +114,19 @@ async function validate_user(req, res, entidad, origen_request) {
     try {
         http.get({'host': 'api.ipify.org', 'port': 80, 'path': '/'}, function(resp) {
             resp.on('data', function(public_ip) {
-                console.log("Your Computer Name is:",hostname)
-                console.log("Your Computer/Server IP Address is:",pc_addr)
-                console.log("Your IP Address family is:",family_addr)
-                console.log(`My public IP address is: ${public_ip}`)
-                console.log("My remote IP Address is:",ip_addrs)
-                console.log("User/Client proxy IP Address is:",proxy_ip_addrs)
-                console.log("User/Client domain name is:",proxy_domain_name)
-                console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
-                console.log("Is User using VPN? is_vpn:",is_vpn);
-                console.log("User city:",usr_city);
-                console.log("User IPS name:",isp_name);
+                if (show) {
+                    console.log("Your Computer Name is:",hostname)
+                    console.log("Your Computer/Server IP Address is:",pc_addr)
+                    console.log("Your IP Address family is:",family_addr)
+                    console.log(`My public IP address is: ${public_ip}`)
+                    console.log("My remote IP Address is:",ip_addrs)
+                    console.log("User/Client proxy IP Address is:",proxy_ip_addrs)
+                    console.log("User/Client domain name is:",proxy_domain_name)
+                    console.log("Page checked at",dt_string) // 28-06-2022 10:08:59
+                    console.log("Is User using VPN? is_vpn:",is_vpn);
+                    console.log("User city:",usr_city);
+                    console.log("User IPS name:",isp_name);
+                }
 
                 const emp = {
                     "entidad": entidad,
@@ -149,7 +152,8 @@ async function validate_user(req, res, entidad, origen_request) {
         });
     }
     catch (e) {
-        console.error(e);
+        if (show)
+            console.error(e);
     }
     
 }

@@ -1,32 +1,59 @@
+// Sql Server (mssql)
 const pool = require('../../bd')
 const sql = require('mssql');
 const dns = require('dns')
 require("dotenv").config(); // Carga variables de entorno
 
+
 async function obtenerEmpleados( filtroEmp ) {
-    // Sql Server (mssql)
-    const conn = await pool.getConnection();
-    var queryStr = "";
-    let results = null;
+    console.log({filtroEmp})
 
-    console.log(filtroEmp ? `filtroEmp: ${filtroEmp}` : "")
+    try {
+        const conn = await pool.getConnection();
 
-    if (filtroEmp) {
-        // results = await pool.query('SELECT * FROM producto WHERE nombre LIKE $1', [ '%' + filtroProducto + '%' ])
-        
-        queryStr = `SELECT * FROM EmpleadoPrueba WHERE emp_nombre LIKE '%' + '${filtroEmp}' + '%'`;
-        
-        results = await conn.request().query(queryStr);
-    } else {
-        // const result = await conn.request().query("");
-        queryStr = "SELECT * FROM EmpleadoPrueba";
-        
-        results = await conn.request().query(queryStr);
+        const result = await conn.request()
+            .input('nombre_cedula', filtroEmp.parametro_busqueda)
+            .execute(`nb_obtener_empleados`);
+
+        const results = result.recordset;
+
+        return results
+
+    } catch(error) {
+        console.log(error)
+
+        return error
     }
+}
 
-    // console.log(results.recordset);
+async function loginEmpleado( filtroEmp ) {
+    try {
+        const conn = await pool.getConnection();
 
-    return results.recordset;
+        const result = await conn.request()
+            .input('cedula', filtroEmp.cedula)
+            .execute(`nb_empleado_login`);
+
+        const results = result.recordset;
+        console.log(results); // Hello World!
+
+        // Si la cédula del empleado no fue encontrada...
+        if (results[0]["IdError"] == -1) {
+            console.log(results[0]["MsgOperacion"])
+            
+            return false
+        }
+        
+        const hash = { iv: results[0]["Clave_IV"], password: results[0]["Clave"] }
+        const text = passwd_decrypt(hash, filtroEmp.clave);
+
+        return text == filtroEmp.clave
+
+    } catch(error) {
+        console.log(error)
+
+        return error
+    }
 }
 
 // Agregar y Actualizar van separados
@@ -143,19 +170,12 @@ const transaction_AgregarActualizar_Empleado = async (empleado) => {
     // var passwd = 'I love kittens ñ í á è';
     var passwd = empleado.clave;
     var key = process.env.Encryption_Secret_key + passwd
-    console.log("secretKey SIN ENC:", key)
-
     var hash = {}
 
-    const conn = await pool.getConnection();
-
     try {
-        hash = passwd_encrypt(passwd, key)
-        console.log("computed hash:",hash)
+        const conn = await pool.getConnection();
 
-        // hash = { iv: "837e59266bf7c82e6c5e9ba7efaa828a", password: "ce0c90dde7e664c6ea9acb0a0e6ef96659dc0d7965c0dd2ce9a3" }
-        const text = passwd_decrypt(hash, passwd);
-        console.log(text); // Hello World!
+        hash = passwd_encrypt(passwd, key)
 
         const result = await conn.request()
             .input('cedula', empleado.cedula)
@@ -168,8 +188,7 @@ const transaction_AgregarActualizar_Empleado = async (empleado) => {
             .execute(`nb_empleado_crear_actualizar`);
 
         const results = result.recordset;
-        
-        // console.log(results);
+        console.log(results);
 
         return results
     } catch (error) {
@@ -177,6 +196,10 @@ const transaction_AgregarActualizar_Empleado = async (empleado) => {
 
         return error
     }
+
+    // hash = { iv: "837e59266bf7c82e6c5e9ba7efaa828a", password: "ce0c90dde7e664c6ea9acb0a0e6ef96659dc0d7965c0dd2ce9a3" }
+    // const text = passwd_decrypt(hash, passwd);
+    // console.log(text); // Hello World!
 
 };
 
@@ -232,7 +255,7 @@ const passwd_encrypt = (text, key) => {
 
 const passwd_decrypt = (hash, passwd) => {
     const algorithm = process.env.Algorithm_encryption_type; // or any other algorithm supported by OpenSSL
-    var secretKey = process.env.Encryption_Secret_key + passwd; // 'password'
+    var secretKey = process.env.Encryption_Secret_key + passwd;
     secretKey = crypto.createHash('sha256').update(String(secretKey)).digest('base64').substring(0, 32);
 
     const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'));
@@ -314,6 +337,7 @@ async function validate_user( emp ) {
 
 module.exports = {
     obtener: obtenerEmpleados,
+    login: loginEmpleado,
     agregar: agregarEmpleado,
     actualizar: actualizarEmpleado,
 
