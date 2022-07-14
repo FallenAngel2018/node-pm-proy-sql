@@ -25,9 +25,6 @@ const routes = express.Router()
 routes.post('/', function(req, res) {
     const filtroTarea = req.body || req.query || null
 
-    console.log("Tarea Get")
-    // console.log({ filtroTarea })
-    
     // usrs.validar(req, res, entidad, "/")
     
     controller.obtenerTareas( filtroTarea )

@@ -32,22 +32,30 @@ async function loginEmpleado( filtroEmp ) {
 
         const result = await conn.request()
             .input('cedula', filtroEmp.cedula)
+            .input('tipo_empleado', parseInt(filtroEmp.tipo_empleado))
             .execute(`nb_empleado_login`);
 
         const results = result.recordset;
-        console.log(results); // Hello World!
 
         // Si la cédula del empleado no fue encontrada...
         if (results[0]["IdError"] == -1) {
             console.log(results[0]["MsgOperacion"])
             
-            return false
+            // return false
+            return {
+                login_success: false,
+                usuario: results[0]["NombreUsuario"]
+            }
         }
         
         const hash = { iv: results[0]["Clave_IV"], password: results[0]["Clave"] }
         const text = passwd_decrypt(hash, filtroEmp.clave);
 
-        return text == filtroEmp.clave
+        // return text == filtroEmp.clave
+        return {
+            login_success: text == filtroEmp.clave,
+            usuario: results[0]["NombreUsuario"]
+        }
 
     } catch(error) {
         console.log(error)

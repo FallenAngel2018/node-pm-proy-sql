@@ -41,7 +41,8 @@
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Ingresaste como: ----</a>
+                    <a id="nombre_usuario" class="nav-link disabled" href="#" tabindex="-1"
+                        aria-disabled="true">Ingresaste como: </a>
                 </li>
             </ul>
             <form id="form_busqueda" class="form-inline my-2 my-lg-0">
@@ -63,7 +64,7 @@
             <div class="form-group col-md-2">
                 <label for="inputState">Seleccione estado de tareas:</label>
                 <select id="inputState" class="form-control">
-                  <option selected value="null">Seleccionar...</option>
+                  <option selected value="505">Seleccionar...</option>
                   <option value="0">Pendientes</option>
                   <option value="1">Completas</option>
                   <!-- <option value="1">No asignadas</option>
@@ -100,6 +101,24 @@
 
             </tbody>
         </table>
+
+        <!-- The Modal -->
+        <!-- <div id="myModal" class="modal">
+            <span class="close">&times;</span>
+            <img class="modal-content" hidden id="img01">
+            <div id="caption"></div>
+        </div> -->
+
+        <img hidden="hidden" id="img01">
+
+
+        <!-- Vertically centered modal -->
+        <!-- <div id="myModal" class="modal modal-dialog modal-dialog-centered">
+            <span class="close">&times;</span>
+            <img class="modal-content" id="img01">
+            <div id="caption"></div>
+        </div> -->
+
     </div>
 </body>
 
@@ -118,15 +137,23 @@
     $(document).ready(async function() {
 
         $("#tbody_tareas").empty();
+        // Fuente: https://stackoverflow.com/questions/19451144/how-do-i-get-html-tag-value-div-in-javascript
+        var usuario = $("#nombre_usuario").text()
+
+        $("#nombre_usuario").text(localStorage.getItem("usuario") ?
+            usuario + localStorage.getItem("usuario") : "Ingresaste como: ----")
 
         const values = {}
         values["parametro_busqueda"] = $('#parametro_busqueda').val();
         
-        const results = await get_tareas(values);
-        console.log({ results })
+        const tasks = await get_tareas(values);
+        console.log({ tasks })
 
-        fill_table(results)
+        // Write a local item..
+        localStorage.setItem("parametro_busqueda", "");
+        localStorage.setItem("estado", "505");
 
+        fill_table(tasks)
 
     });
 
@@ -143,12 +170,46 @@
             values[field.name] = field.value;
         });
 
-        $('#inputState').val() != null ?
-            values["estado"] = $('#inputState').val() : ""
+        console.log({ values })
 
-        const login_success = await get_tareas(values);
-        console.log({ login_success })
-        fill_table(login_success)
+        const { parametro_busqueda } = values
+        const estado = $('#inputState').val()
+
+        // Read a local item..
+        var localSt_parametro_busqueda = localStorage.getItem("parametro_busqueda");
+        var localSt_estado = localStorage.getItem("estado");
+
+        // console.log("parametro_busqueda:",parametro_busqueda)
+
+        // Para ahorrar tiempo de búsqueda y no sobrecargar con peticiones repetidas
+        // a la base de datos, solo se inicia el proceso cuando los parámetros
+        // de búsqueda sean distintos a los usados anteriormente
+        if(parametro_busqueda == localSt_parametro_busqueda
+            && estado == localSt_estado) {
+            
+            console.log("NO HIZO LA BÚSQUEDA")
+
+            return
+        }
+        
+        // Write a local item..
+        localStorage.setItem("parametro_busqueda", parametro_busqueda);
+        localStorage.setItem("estado", estado ? estado : "505");
+       
+
+        // Si estado (input con id inputState) no es nulo, su valor
+        // se agrega a 'values' para ser enviado por POST
+        estado != "505" ?
+            values["estado"] = estado : ""
+
+        console.log("PROCESO DE BÚSQUEDA INICIADO")
+
+        const tasks = await get_tareas(values);
+        console.log({ tasks })
+
+        fill_table(tasks)
+
+        
 
 
         // axios.post('/user', {
@@ -188,17 +249,13 @@
                 // console.log({ field })
                 // console.log(field["Cedula"])
 
-                $.each(field, function(i, campo) {
-                    // console.log({ campo })
-                });
-
                 values[field.name] = field.value;
             });
 
-            const login_success = res.data.body
+            const tareas = res.data.body
             // console.log({ values })
 
-            return login_success
+            return tareas
 
         } catch (errors) {
             console.error(errors);
@@ -207,6 +264,7 @@
 
     // #endregion
 
+    // #region Method: fill_table
 
     function fill_table( results ) {
         // Fuente: https://stackoverflow.com/questions/4982846/jquery-clear-empty-all-contents-of-tbody-element
@@ -241,7 +299,6 @@
             let currentDate = date.toISOString().substring(0,10);
             // item.FechaSubida = currentDate
             item.FechaSubida ? item.FechaSubida = currentDate : null
-            console.log("currentDate:", currentDate)
             fecha.innerHTML = `<input type="date" disabled min="1997-01-01"
                 max="2030-12-31" value="${item.FechaSubida}" />`;
             
@@ -250,11 +307,84 @@
             let nombre_responsable = fila.insertCell(8);
             nombre_responsable.innerHTML = item.Nombre;
             let boton_imagen = fila.insertCell(9);
-            boton_imagen.innerHTML = `<button class="btn btn-primary">Ver Imagen</button>`;
-            
+            boton_imagen.innerHTML = 
+            // `<button id="image_button_${i+1}"
+            //     onclick="show_photo(this)" value="${item.Imagen}"
+            //         class="btn btn-primary">Ver Imagen</button>`
+            `<a download="Cod_Medidor-${item.FechaSubida}.png" class="btn btn-primary"
+                href="${item.Imagen}">Ver Imagen</a>`;
+
+            let hidden_image = fila.insertCell(10);
+            hidden_image.innerHTML = `<input id="hidden_image_${i+1}" type="hidden"
+                value="${item.Imagen}"></input>`;
 
             i++
         });
     }
+
+    // #endregion
+
+    function show_photo(e) {
+
+        // console.log({ e })
+        // console.log(e.value)
+
+        var modalImg = document.getElementById("img01");
+        // modalImg.style.display = "block";
+        modalImg.removeAttribute("hidden");
+        modalImg.src = e.value
+        
+
+        // // Get the modal
+        // var modal = document.getElementById("myModal");
+
+        // // Get the image and insert it inside the modal - use its "alt" text as a caption
+        // // var img = document.getElementById("myImg");
+        // var modalImg = document.getElementById("img01");
+        // var captionText = document.getElementById("caption");
+        // modal.style.display = "block";
+        // // modalImg.src = e.value
+        // captionText.innerHTML = this.alt;
+        // // img.onclick = function(){
+        // //     modal.style.display = "block";
+        // //     modalImg.src = ""; //$('#parametro_busqueda').val();
+        // //     captionText.innerHTML = this.alt;
+        // // }
+
+        // modalImg.style.display = "block";
+        // modalImg.src = e.value
+
+        // console.log(modalImg.src)
+
+        // // Get the <span> element that closes the modal
+        // var span = document.getElementsByClassName("close")[0];
+
+        // // When the user clicks on <span> (x), close the modal
+        // span.onclick = function() { 
+        //     modal.style.display = "none";
+        // }
+
+    }
+
+    // #region Method: arraysEqual
+
+    function arraysEqual(a, b) {
+        if (a === b) return true;
+        if (a == null || b == null) return false;
+        if (a.length !== b.length) return false;
+
+        // If you don't care about the order of the elements inside
+        // the array, you should sort both arrays here.
+        // Please note that calling sort on an array will modify that array.
+        // you might want to clone your array first.
+
+        for (var i = 0; i < a.length; ++i) {
+            if (a[i] !== b[i]) return false;
+        }
+        return true;
+    }
+
+    // #endregion
+
 
 </script>

@@ -13,7 +13,7 @@ async function obtenerTareas( tarea ) {
         const result = await conn.request()
         // .input('id_empleado', tarea.id_empleado)
         .input('cedula_nombre', tarea.parametro_busqueda)
-        // .input('tipo_empleado', tarea.tipo_empleado) // 0: Normal, 1: Admin
+        .input('tipo_empleado', parseInt(tarea.tipo_empleado)) // 0: Normal, 1: Admin
         .input('estado_tarea', tarea.estado != 'null' ? tarea.estado : null) // 0: PENDIENTE, 1: COMPLETADO, null = Todas las tareas???
         .execute(`nb_obtener_tareas`);
 
@@ -25,8 +25,23 @@ async function obtenerTareas( tarea ) {
             element["IdTarea"] = parseInt(results[i]["IdTarea"])
             // En este campo, los resultados volvían como [ '1', '1' ], en vez de solo un Int 1
             element["IdEmpleado"] = parseInt(results[i]["IdEmpleado"][0])
+
+            if(element["Imagen"] != null) {
+                var originalBase64ImageStr = Buffer.from(element["Imagen"], 'utf8');
+                decodedImage = originalBase64ImageStr.toString('base64');
+
+                // console.log({originalBase64ImageStr})
+                // console.log({decodedImage})
+
+                // const img_varbinary = `data:image/jpg;base64,${decodedImage}`
+                const img_varbinary = `data:image/png;base64,${decodedImage}`
+
+                element["Imagen"] = img_varbinary
+            }
+            
             i++
         });
+
 
         return results
 
@@ -99,6 +114,8 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
         const results = result.recordset;
         
         console.log(results);
+
+        
 
         return results
     } catch (error) {

@@ -4,11 +4,12 @@ const response = require('../../network/response')
 const usrs = require('../Users/other_methods')
 const routes = express.Router()
 
-routes.get('/', function(req, res) {
+// routes.get('/', function(req, res) {
+routes.post('/', function(req, res) {
     // const filtroEmpleado = req.body.emp_nombre || req.query.emp_nombre || null
     const filtroEmpleado = req.body || req.query || null
 
-    usrs.validar(req, res, entidad, "/")
+    // usrs.validar(req, res, entidad, "/")
     
     controller.obtenerEmpleados( filtroEmpleado )
         .then((data) => response.success(req, res, data, response.success_message()))
@@ -18,9 +19,6 @@ routes.get('/', function(req, res) {
 routes.post('/login', function(req, res) {
 
     // usrs.validar(req, res, entidad, "/login")
-
-    console.log("Método Login")
-    console.log(req.body)
 
     controller.loginEmpleado( req.body )
         .then((data) => response.success(req, res, data, response.success_message()))

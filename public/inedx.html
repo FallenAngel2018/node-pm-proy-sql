@@ -28,6 +28,8 @@
             <div id="login_error" style="display: none" class="alert alert-danger" role="alert">
             </div>
 
+            <input type="hidden" name="tipo_empleado" value="1">
+
             <div class="form-floating mb-3">
               <!-- <input type="email" class="form-control rounded-3" id="floatingInput" name="cedula" -->
               <input type="text" class="form-control rounded-3" id="floatingInput" name="cedula"
@@ -69,30 +71,12 @@
 
   // #region jQuery - Document Ready y Submit
 
-  const login_validation = async todo => {
-      try {
-        // const json = JSON.stringify({ cedula: "09228313911", clave: "jpiza" });
-        const res = await axios.post(`${BASE_URL}${API_ENTITY}${API_METHOD}`, todo, {
-          headers: {
-            // Overwrite Axios's automatically set Content-Type
-            'Content-Type': 'application/json'
-          }
-        });
+  $(document).ready(function() {
+    localStorage.removeItem("usuario");
+    localStorage.removeItem("parametro_busqueda");
+    localStorage.removeItem("estado");
+  });
 
-        console.log("Login success?:", res.data.body)
-
-        const login_success = res.data.body
-
-        return login_success
-
-      } catch (errors) {
-        console.error(errors);
-      }
-  };
-
-  // $(document).ready(function() {
-  // });
-  
 
   // Fuente: https://www.javatpoint.com/jquery-submit#:~:text=%E2%86%92%20%E2%86%90%20prev-,jQuery%20submit(),certain%20form%20elements%20have%20focus.
   // $( "form" ).submit(function( event ) {  
@@ -111,11 +95,13 @@
 
       console.log({ values })
 
-      const login_success = await login_validation(values);
-      console.log({ login_success })
+      const results = await login_validation(values);
+      // Descomposición de los elementos del diccionario 'results'
+      const { login_success, usuario } = results
 
       if(login_success) {
-        window.location.href = "dashboard.html"
+        localStorage.setItem("usuario", usuario);
+        window.location.href = "dashboard.html";
       } else {
         // Muestra el div que antes estaba oculto con display:none
         document.getElementById("login_error").style.display = "block";
@@ -140,6 +126,26 @@
   // #endregion
 
 
+  const login_validation = async todo => {
+      try {
+        // const json = JSON.stringify({ cedula: "555533322", clave: "root123" });
+        const res = await axios.post(`${BASE_URL}${API_ENTITY}${API_METHOD}`, todo, {
+          headers: {
+            // Overwrite Axios's automatically set Content-Type
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log("Login success?:", res.data.body)
+
+        const login_success = res.data.body
+
+        return login_success
+
+      } catch (errors) {
+        console.error(errors);
+      }
+  };
 
   
 
