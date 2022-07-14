@@ -21,10 +21,14 @@ const routes = express.Router()
 
 */
 
-routes.get('/', function(req, res) {
+// routes.get
+routes.post('/', function(req, res) {
     const filtroTarea = req.body || req.query || null
 
-    usrs.validar(req, res, entidad, "/")
+    console.log("Tarea Get")
+    // console.log({ filtroTarea })
+    
+    // usrs.validar(req, res, entidad, "/")
     
     controller.obtenerTareas( filtroTarea )
         .then((data) => response.success(req, res, data, response.success_message()))

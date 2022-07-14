@@ -75,12 +75,14 @@ async function validate_user(req, res, entidad, origen_request) {
                         +`&ip_address=${proxy_ip_addrs}`)
         .then(response => {
             data = response.data
-            console.log(response.data);
+
+            if (show) 
+                console.log(response.data);
 
             is_vpn = data["security"]["is_vpn"]
             isp_name = data["connection"]["isp_name"]
             timezone_name = data["timezone"]["name"]
-            usr_city = data["city"] || "GYE???"
+            usr_city = data["city"] || "ARN???"
 
         })
         .catch(error => {

@@ -7,11 +7,14 @@ require("dotenv").config(); // Carga variables de entorno
 async function obtenerTareas( tarea ) {
     const conn = await pool.getConnection();
 
+    console.log({ tarea })
+
     try {
         const result = await conn.request()
-        .input('id_empleado', tarea.id_empleado)
-        .input('tipo_empleado', tarea.tipo_empleado) // 0: Normal, 1: Admin
-        .input('estado_tarea', tarea.estado) // 0: PENDIENTE, 1: COMPLETADO, null = Todas las tareas???
+        // .input('id_empleado', tarea.id_empleado)
+        .input('cedula_nombre', tarea.parametro_busqueda)
+        // .input('tipo_empleado', tarea.tipo_empleado) // 0: Normal, 1: Admin
+        .input('estado_tarea', tarea.estado != 'null' ? tarea.estado : null) // 0: PENDIENTE, 1: COMPLETADO, null = Todas las tareas???
         .execute(`nb_obtener_tareas`);
 
         const results = result.recordset;

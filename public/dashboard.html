@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <title>Dashboard</title>
+</head>
+
+<body style="background-color: #CFD2CF">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">AquaService</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="dashboard.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="IngresoTarea.html">Ingresar nueva tarea</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="verEmpleados.html">Ver empleados</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="ingresoEmpleado.html">Ingresa nuevo empleado</a>
+                </li>
+                <li class="nav-item">
+                    <a style="color: red;" class="nav-link" href="inedx.html">SALIR</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Ingresaste como: ----</a>
+                </li>
+            </ul>
+            <form id="form_busqueda" class="form-inline my-2 my-lg-0">
+                <label for="parametro_busqueda" class="form-control mr-sm-2">Cédula o Nombre</label>
+                <input id="parametro_busqueda" name="parametro_busqueda"
+                    class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+            </form>
+        </div>
+    </nav>
+
+
+
+    <div id="tabla">
+        <table class="table">
+            <center>
+                <h4>Tareas asignadas</h4>
+            </center>
+            <div class="form-group col-md-2">
+                <label for="inputState">Seleccione estado de tareas:</label>
+                <select id="inputState" class="form-control">
+                  <option selected value="null">Seleccionar...</option>
+                  <option value="0">Pendientes</option>
+                  <option value="1">Completas</option>
+                  <!-- <option value="1">No asignadas</option>
+                  <option value="0">Asignadas</option> -->
+                </select>
+              </div>
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Codigo de Vivienda</th>
+                    <th scope="col">Direccion</th>
+                    <th scope="col">Manzana</th>
+                    <th scope="col">Villa</th>
+                    <th scope="col">Medida OCR</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Coordenadas GPS</th>
+                    <th scope="col">Responsable</th>
+                    <th scope="col">Accion</th>
+                </tr>
+            </thead>
+            <tbody id="tbody_tareas">
+                <tr>
+                    <th scope="row">1</th>
+                    <td>54874</td>
+                    <td>Centenario</td>
+                    <td>6B</td>
+                    <td>40</td>
+                    <td>45874</td>
+                    <td><input type="date"></input></td>
+                    <td>454787 - 458784</td>
+                    <td>jmartinez</td>
+                    <td><button class="btn btn-primary">Ver Imagen</button></td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+
+
+<script>
+
+    const BASE_URL = 'http://localhost:3000';
+    
+
+    // #region jQuery - Document Ready y Submit
+
+    $(document).ready(async function() {
+
+        $("#tbody_tareas").empty();
+
+        const values = {}
+        values["parametro_busqueda"] = $('#parametro_busqueda').val();
+        
+        const results = await get_tareas(values);
+        console.log({ results })
+
+        fill_table(results)
+
+
+    });
+
+
+    $( "#form_busqueda" ).submit(async function( event ) {  
+        event.preventDefault();
+
+        // Fuente para arreglar serializeArray() vacío
+        // https://stackoverflow.com/questions/39808965/serializearray-gives-empty-array
+        var form_data_array = $('#form_busqueda').serializeArray() // o también .serialize()
+
+        var values = {};
+        $.each(form_data_array, function(i, field) {
+            values[field.name] = field.value;
+        });
+
+        $('#inputState').val() != null ?
+            values["estado"] = $('#inputState').val() : ""
+
+        const login_success = await get_tareas(values);
+        console.log({ login_success })
+        fill_table(login_success)
+
+
+        // axios.post('/user', {
+        //   firstName: 'Fred',
+        //   lastName: 'Flintstone'
+        // })
+        // .then(function (response) {
+        //   console.log(response);
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        // });
+
+    });
+
+    // #endregion
+
+    // #region Async Function - get_tareas
+    
+    const get_tareas = async tarea => {
+        try {
+            const API_ENTITY_TAREA = '/tarea';
+            const API_METHOD_GET = '/';
+
+            const values = {}
+            values["parametro_busqueda"] = $('#parametro_busqueda').val();
+
+
+            const res = await axios.post(`${BASE_URL}${API_ENTITY_TAREA}${API_METHOD_GET}`, tarea, {
+                headers: {
+                    // Overwrite Axios's automatically set Content-Type
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            $.each(res.data.body, function(i, field) {
+                // console.log({ field })
+                // console.log(field["Cedula"])
+
+                $.each(field, function(i, campo) {
+                    // console.log({ campo })
+                });
+
+                values[field.name] = field.value;
+            });
+
+            const login_success = res.data.body
+            // console.log({ values })
+
+            return login_success
+
+        } catch (errors) {
+            console.error(errors);
+        }
+    };
+
+    // #endregion
+
+
+    function fill_table( results ) {
+        // Fuente: https://stackoverflow.com/questions/4982846/jquery-clear-empty-all-contents-of-tbody-element
+        $("#tbody_tareas").empty();
+        
+        const table = document.getElementById("tbody_tareas");
+
+        let i = 0
+
+        results.forEach( function(item) {
+            let fila = table.insertRow(table.rows.length);
+
+            let fila_index = fila.insertCell(0);
+            // fila_index.innerHTML = i+1;
+            fila_index.innerHTML = `<th scope="row">${i+1}</th>`;
+            
+            let cod_vivienda = fila.insertCell(1);
+            cod_vivienda.innerHTML = item.Cod_Vivienda;
+            let direccion = fila.insertCell(2);
+            direccion.innerHTML = item.Direccion;
+            let manzana = fila.insertCell(3);
+            manzana.innerHTML = item.Manzana;
+            let villa = fila.insertCell(4);
+            villa.innerHTML = item.Villa;
+            let cod_medidor = fila.insertCell(5);
+            cod_medidor.innerHTML = item.Cod_Medidor;
+
+            // Fuente: https://stackoverflow.com/questions/12629249/inserting-select-button-into-html-table-using-innerhtml
+            let fecha = fila.insertCell(6);
+            let date = new Date(item.FechaSubida)
+            // Fuente: https://stackoverflow.com/questions/28729634/set-values-in-input-type-date-and-time-in-javascript
+            let currentDate = date.toISOString().substring(0,10);
+            // item.FechaSubida = currentDate
+            item.FechaSubida ? item.FechaSubida = currentDate : null
+            console.log("currentDate:", currentDate)
+            fecha.innerHTML = `<input type="date" disabled min="1997-01-01"
+                max="2030-12-31" value="${item.FechaSubida}" />`;
+            
+            let gps = fila.insertCell(7);
+            gps.innerHTML = item.GPS;
+            let nombre_responsable = fila.insertCell(8);
+            nombre_responsable.innerHTML = item.Nombre;
+            let boton_imagen = fila.insertCell(9);
+            boton_imagen.innerHTML = `<button class="btn btn-primary">Ver Imagen</button>`;
+            
+
+            i++
+        });
+    }
+
+</script>

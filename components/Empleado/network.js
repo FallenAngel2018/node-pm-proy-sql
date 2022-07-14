@@ -17,7 +17,10 @@ routes.get('/', function(req, res) {
 
 routes.post('/login', function(req, res) {
 
-    usrs.validar(req, res, entidad, "/login")
+    // usrs.validar(req, res, entidad, "/login")
+
+    console.log("Método Login")
+    console.log(req.body)
 
     controller.loginEmpleado( req.body )
         .then((data) => response.success(req, res, data, response.success_message()))
