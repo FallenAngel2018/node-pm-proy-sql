@@ -11,6 +11,12 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     <title>Dashboard</title>
+
+    <style>
+        .fixed-label {
+            font-size: 15px;
+        }
+    </style>
 </head>
 
 <body style="background-color: #CFD2CF">
@@ -25,23 +31,23 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="dashboard.html">Home <span class="sr-only">(current)</span></a>
+                    <a class="nav-link fixed-label" href="dashboard.html">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="IngresoTarea.html">Ingresar nueva tarea</a>
+                    <a class="nav-link fixed-label" href="IngresoTarea.html">Ingresar nueva tarea</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="verEmpleados.html">Ver empleados</a>
+                    <a class="nav-link fixed-label" href="verEmpleados.html">Ver empleados</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" style="cursor: pointer" onclick="goToIngresoEmpleado()">Ingresa nuevo empleado</a>
+                    <a class="nav-link fixed-label" style="cursor: pointer; font-size: 15px;" onclick="goToIngresoEmpleado()">Ingresa nuevo empleado</a>
                 </li>
                 <li class="nav-item">
-                    <a style="color: red;" class="nav-link" href="inedx.html">SALIR</a>
+                    <a style="color: red;" class="nav-link fixed-label" href="inedx.html">SALIR</a>
                 </li>
                 
                 <li class="nav-item">
-                    <a id="nombre_usuario" class="nav-link disabled" href="#" tabindex="-1"
+                    <a id="nombre_usuario" class="nav-link disabled fixed-label" href="#" tabindex="-1"
                         aria-disabled="true">Ingresaste como: </a>
                 </li>
             </ul>
@@ -113,6 +119,12 @@
 
 
 <script>
+
+    /*
+        Notas:
+        En heroku, en el menú de AquaService hay que poner el font-size a 15px
+        para que no se vea mal y se parezca más a como se ve en localhost
+    */
 
     // const BASE_URL = 'http://localhost:3000';
     // Producción
