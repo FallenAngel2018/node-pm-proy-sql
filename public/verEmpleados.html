@@ -240,9 +240,11 @@
             // `<button id="btnAccion_${i+1}"
             //     onclick="show_photo(this)" value="${item.IdEmpleado}"
             //         class="btn btn-primary">Ver Imagen</button>`
-            `<a href="ingresoEmpleado.html">
-                <button value="${item.IdEmpleado} class="btn btn-primary">Editar</button>
-            </a>`
+            `<button id="btnEmpleado_${item.IdEmpleado}" value="${item.IdEmpleado}"
+                class="btn btn-primary">Editar</button>`
+            // `<a href="ingresoEmpleado.html">
+            //     <button value="${item.IdEmpleado} class="btn btn-primary">Editar</button>
+            // </a>`
             let hidden_idEmpleado = fila.insertCell(6);
             hidden_idEmpleado.innerHTML = `<input id="hidden_idEmpleado${i+1}" type="hidden"
                 value="${item.IdEmpleado}"></input>`;
