@@ -13,6 +13,7 @@ async function obtenerEmpleados( filtroEmp ) {
 
         const result = await conn.request()
             .input('nombre_cedula', filtroEmp.parametro_busqueda)
+            .input('tipo_empleado', filtroEmp.tipo_empleado ? parseInt(filtroEmp.tipo_empleado) : null)
             .input('id_empleado', filtroEmp.id_empleado)
             .execute(`nb_obtener_empleados`);
 

@@ -11,6 +11,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     <title>Lista Empleados</title>
+
+    <style>
+        /* Fuente: https://www.w3schools.com/howto/howto_css_fading_buttons.asp */
+        #addEmpleado {
+          background-color: #ddd;
+          border-color: #1BB004;
+          transition: 0.3s;
+        }
+        
+        #addEmpleado:hover {
+          background-color: #2a9e18; /* #1BB004 */
+          color: white;
+        }
+    </style>
 </head>
 
 <body style="background-color: #CFD2CF">
@@ -24,8 +38,8 @@
                 <!-- <div style="float: left;" class="form-group col-md-2"> -->
                     <form id="form_busqueda" class="form-inline my-2 my-lg-0">
                         <div style="float: left;" class="form-group col-md-2">
-                            <label for="inputState">Seleccione tipo de empleado:</label>
-                            <select id="inputState" class="form-control mr-sm-2">
+                            <label for="tipo_empleado">Seleccione tipo de empleado:</label>
+                            <select id="tipo_empleado" name="tipo_empleado" class="form-control mr-sm-2">
                                 <option selected value="505">Seleccionar...</option>
                                 <option value="0">Normal</option>
                                 <option value="1">Administrador</option>
@@ -38,7 +52,7 @@
                                 class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
                         </div>
 
-                        <div style="float: left;" class="form-group col-md-2">
+                        <div style="float: left; margin-top: 32px" class="form-group col-md-1">
                             <button class="btn btn-outline-success my-2 my-sm-0 mr-sm-2"
                                 type="submit">Buscar</button>
                         </div>
@@ -49,35 +63,39 @@
                 <!-- </div> -->
                 <div style="float: right; margin-right: 15px;">
                     <a href="dashboard.html">
-                        <buttton style="margin-top: 30px;" class="w-80 mb-2 btn btn-lg rounded-4 btn-secondary"
-                            type="submit">Regresar</button>
+                        <button style="margin-top: 30px;" class="w-80 mb-2 btn btn-lg rounded-4 btn-secondary"
+                            >Regresar</button>
                     </a>
-
                 </div>
+                <div style="float: right; margin-right: 60px;">
+                    <a href="ingresoEmpleado.html">
+                        <button id="addEmpleado" style="margin-top: 30px;" style="background-color: #1BB004 !important;"
+                            class="w-80 mb-2 btn btn-lg rounded-4 btn btn-lg "
+                            >Agregar Empleado</button>
+                    </a>
+                </div>
+                
             </div>
             <thead>
                 <tr>
                     <th scope="col"></th>
                     <th scope="col">Nombre</th>
-                    <!-- <th scope="col">Usuario</th> -->
                     <th scope="col">Cédula</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Accion</th>
+                    <th scope="col">Acción</th>
 
                 </tr>
             </thead>
             <tbody id="tbody_empleados">
-                <tr>
+                <!-- <tr>
                     <th scope="row">1</th>
                     <td>Andres Fuentes</td>
-                    <!-- <td>afuentes</td> -->
                     <td>4578412547</td>
                     <td>Activo</td>
                     <td>Administrador</td>
-
                     <td><a href="ingresoEmpleado.html"><button class="btn btn-primary">Editar</button></a></td>
-                </tr>
+                </tr> -->
 
             </tbody>
         </table>
@@ -88,6 +106,14 @@
 
 
 <script>
+
+    /*
+        Notas:
+        En heroku, se ve un poco mal el formulario para buscar empleados
+        porque las letras de los labels son un poco grandes,
+        por lo que tal vez tendré que hacerlas de un tamaño fijo como de 13 o 14px,
+        ya que hice las pruebas y se veia un poco mejor.
+    */
 
     // const BASE_URL = 'http://localhost:3000';
     // Producción
@@ -106,8 +132,8 @@
         const employees = await getEmpleados(values);
 
         // Write a local item..
-        localStorage.setItem("parametro_busqueda", "");
-        localStorage.setItem("estado", "505");
+        localStorage.setItem("search_parametro_busqueda", "");
+        localStorage.setItem("search_tipo_empleado", "505");
 
         fill_table(employees)
 
@@ -129,11 +155,11 @@
         console.log({ values })
 
         const { parametro_busqueda } = values
-        const estado = $('#inputState').val()
+        const tipo = $('#tipo_empleado').val()
 
         // Read a local item..
-        var localSt_parametro_busqueda = localStorage.getItem("parametro_busqueda");
-        var localSt_estado = localStorage.getItem("estado");
+        var localSt_parametro_busqueda = localStorage.getItem("search_parametro_busqueda");
+        var localSt_tipo_emp = localStorage.getItem("search_tipo_empleado");
 
         // console.log("parametro_busqueda:",parametro_busqueda)
 
@@ -141,7 +167,7 @@
         // a la base de datos, solo se inicia el proceso cuando los parámetros
         // de búsqueda sean distintos a los usados anteriormente
         if(parametro_busqueda == localSt_parametro_busqueda
-            && estado == localSt_estado) {
+            && tipo == localSt_tipo_emp) {
             
             console.log("NO HIZO LA BÚSQUEDA")
 
@@ -149,20 +175,19 @@
         }
 
         // Write a local item..
-        localStorage.setItem("parametro_busqueda", parametro_busqueda);
-        localStorage.setItem("estado", estado ? estado : "505");
+        localStorage.setItem("search_parametro_busqueda", parametro_busqueda);
+        localStorage.setItem("search_tipo_empleado", tipo ? tipo : "505");
 
 
-        // Si estado (input con id inputState) no es nulo, su valor
-        // se agrega a 'values' para ser enviado por POST
-        estado != "505" ?
-            values["estado"] = estado : ""
+        // Si tipo_empleado es distinto de "505", su valor
+        // se agrega a 'values' para ser enviado, sino su valor se va como null
+        values["tipo_empleado"] = tipo != "505" ? tipo : null
 
         console.log("PROCESO DE BÚSQUEDA INICIADO")
 
         const employees = await getEmpleados(values);
 
-        // fill_table(employees)
+        fill_table(employees)
 
     });
 
