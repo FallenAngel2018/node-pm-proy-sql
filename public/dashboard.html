@@ -34,7 +34,7 @@
                     <a class="nav-link" href="verEmpleados.html">Ver empleados</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="ingresoEmpleado.html">Ingresa nuevo empleado</a>
+                    <a class="nav-link" style="cursor: pointer" onclick="goToIngresoEmpleado()">Ingresa nuevo empleado</a>
                 </li>
                 <li class="nav-item">
                     <a style="color: red;" class="nav-link" href="inedx.html">SALIR</a>
@@ -322,6 +322,14 @@
     }
 
     // #endregion
+
+
+    function goToIngresoEmpleado() {
+    
+        localStorage.setItem("VentanaDashboard", true)
+
+        window.location.href = "ingresoEmpleado.html"
+    }
 
     function show_photo(e) {
 

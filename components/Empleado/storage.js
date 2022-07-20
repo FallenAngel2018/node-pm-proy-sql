@@ -13,6 +13,7 @@ async function obtenerEmpleados( filtroEmp ) {
 
         const result = await conn.request()
             .input('nombre_cedula', filtroEmp.parametro_busqueda)
+            .input('id_empleado', filtroEmp.id_empleado)
             .execute(`nb_obtener_empleados`);
 
         const results = result.recordset;
@@ -245,7 +246,7 @@ const passwd_encrypt = (text, key) => {
     var algorithm = process.env.Algorithm_encryption_type; // or any other algorithm supported by OpenSSL
     var secretKey = key;
     secretKey = crypto.createHash('sha256').update(String(secretKey)).digest('base64').substring(0, 32);
-    console.log("secretKey CON ENC:", secretKey)
+    // console.log("secretKey CON ENC:", secretKey)
 
     // Create an initialization vector
     var iv = crypto.randomBytes(16); // <Buffer f4 7e ... 09>

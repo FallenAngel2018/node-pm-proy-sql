@@ -9,8 +9,6 @@ routes.post('/', function(req, res) {
     // const filtroEmpleado = req.body.emp_nombre || req.query.emp_nombre || null
     const filtroEmpleado = req.body || req.query || null
 
-    // usrs.validar(req, res, entidad, "/")
-    
     controller.obtenerEmpleados( filtroEmpleado )
         .then((data) => response.success(req, res, data, response.success_message()))
         .catch((error) => response.error(req, res, error) )

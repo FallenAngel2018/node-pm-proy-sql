@@ -89,22 +89,21 @@
 
 <script>
 
-    // const BASE_URL = 'http://localhost:3000';
+    const BASE_URL = 'http://localhost:3000';
     // Producción
-    const BASE_URL = 'https://node-pm-proy.herokuapp.com';
+    // const BASE_URL = 'https://node-pm-proy.herokuapp.com';
 
     
     // #region jQuery - Document Ready y Submit
 
     $(document).ready(async function() {
 
-        // $("#tbody_empleados").empty();
+        $("#tbody_empleados").empty();
 
         const values = {}
         values["parametro_busqueda"] = $('#parametro_busqueda').val();
 
         const employees = await getEmpleados(values);
-        console.log({ employees })
 
         // Write a local item..
         localStorage.setItem("parametro_busqueda", "");
@@ -162,10 +161,8 @@
         console.log("PROCESO DE BÚSQUEDA INICIADO")
 
         const employees = await getEmpleados(values);
-        console.log({ employees })
 
         // fill_table(employees)
-
 
     });
 
@@ -177,14 +174,14 @@
     
     const getEmpleados = async empleado => {
         try {
-            const API_ENTITY_TAREA = '/empleado';
+            const API_ENTITY = '/empleado';
             const API_METHOD_GET = '/';
 
             const values = {}
             values["parametro_busqueda"] = $('#parametro_busqueda').val();
 
 
-            const res = await axios.post(`${BASE_URL}${API_ENTITY_TAREA}${API_METHOD_GET}`, empleado, {
+            const res = await axios.post(`${BASE_URL}${API_ENTITY}${API_METHOD_GET}`, empleado, {
                 headers: {
                     // Overwrite Axios's automatically set Content-Type
                     'Content-Type': 'application/json'
@@ -216,7 +213,7 @@
 
     function fill_table( results ) {
         // Fuente: https://stackoverflow.com/questions/4982846/jquery-clear-empty-all-contents-of-tbody-element
-        // $("#tbody_empleados").empty();
+        $("#tbody_empleados").empty();
         
         const table = document.getElementById("tbody_empleados");
 
@@ -240,11 +237,12 @@
             // `<button id="btnAccion_${i+1}"
             //     onclick="show_photo(this)" value="${item.IdEmpleado}"
             //         class="btn btn-primary">Ver Imagen</button>`
-            `<button id="btnEmpleado_${item.IdEmpleado}" value="${item.IdEmpleado}"
-                class="btn btn-primary">Editar</button>`
             // `<a href="ingresoEmpleado.html">
-            //     <button value="${item.IdEmpleado} class="btn btn-primary">Editar</button>
+            //     <button id="btnEmpleado_${item.IdEmpleado}" value="${item.IdEmpleado}"
+            //     onclick="editarEmpleado(this.value)" class="btn btn-primary">Editar</button>
             // </a>`
+            `<button id="btnEmpleado_${item.IdEmpleado}" value="${item.IdEmpleado}"
+                onclick="editarEmpleado(this.value)" class="btn btn-primary">Editar</button>`
             let hidden_idEmpleado = fila.insertCell(6);
             hidden_idEmpleado.innerHTML = `<input id="hidden_idEmpleado${i+1}" type="hidden"
                 value="${item.IdEmpleado}"></input>`;
@@ -255,5 +253,16 @@
 
     // #endregion
 
+    // #region Method: editarEmpleado
+
+    function editarEmpleado(id) {
+
+        console.log({ id })
+        localStorage.setItem("IdEmpleado", id);
+
+        window.location.href = "ingresoEmpleado.html";
+    }
+
+    //#endregion
 
 </script>
