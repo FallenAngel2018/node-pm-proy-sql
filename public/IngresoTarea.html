@@ -7,6 +7,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     <title>Ingreso Tarea</title>
 </head>
 
@@ -21,44 +23,53 @@
                 </div>
 
                 <div class="modal-body p-5 pt-0">
-                    <form class="">
+                    <div id="tarea_error" style="display: none"
+                        class="alert alert-danger" role="alert">
+                    </div>
+
+                    <form id="form_tarea" class="">
+
+                        <input type="hidden" name="id_tarea" value="0">
+
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control rounded-3" id="floatingInput"
-                                placeholder="ejemplo: 478569">
-                            <label for="floatingInput">Codigo de vivienda</label>
+                            <input type="number" class="form-control rounded-3" id="cod_vivienda"
+                                name="cod_vivienda" placeholder="ejemplo: 478569" value="34234">
+                            <label for="cod_vivienda">Codigo de vivienda</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3" id="floatingInput"
-                                placeholder="ejemplo: Centenario">
-                            <label for="floatingInput">Direccion</label>
+                            <input type="text" class="form-control rounded-3" id="direccion"
+                                name="direccion" placeholder="ejemplo: Centenario" value="Centa">
+                            <label for="direccion">Dirección</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3" id="floatingInput"
-                                placeholder="ejemplo: 40A">
-                            <label for="floatingInput">Manzana</label>
+                            <input type="text" class="form-control rounded-3" id="manzana"
+                                name="manzana" placeholder="ejemplo: 40A" value="42S">
+                            <label for="manzana">Manzana</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <input type="text" class="form-control rounded-3" id="floatingInput"
-                                placeholder="ejemplo: 50">
-                            <label for="floatingInput">Villa</label>
+                            <input type="text" class="form-control rounded-3" id="villa"
+                                name="villa" placeholder="ejemplo: 50" value="59">
+                            <label for="villa">Villa</label>
                         </div>
                         
                         <div class="form-floating mb-3">
-                            <input type="number" class="form-control rounded-3" id="floatingInput"
-                                placeholder="Ingrese numero de cedula del empleado">
-                            <label for="floatingInput">Responsable</label>
+                            <input type="search" class="form-control rounded-3" id="cedula" value="094444"
+                                name="cedula" placeholder="Ingrese numero de cedula del empleado">
+                            <label for="cedula">Responsable</label>
                         </div>
 
-                        <a href="dashboard.html">
-                            <buttton class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Guardar</button>
-                        </a>
-                        <a href="dashboard.html">
-                            <buttton class="w-100 mb-2 btn btn-lg rounded-3 btn-secondary" type="submit">Regresar</button>
-                        </a>
-                        <small class="text-muted">Asegurese de ingresar correctamente sus datos</small>
-                        <hr class="my-4">
+                        <div>
+                            <button id="btnGuardar" class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Guardar</button>
+                        </div>
 
                     </form>
+
+                    <a href="dashboard.html">
+                        <button class="w-100 mb-2 btn btn-lg rounded-3 btn-secondary">Regresar</button>
+                    </a>
+                    <small class="text-muted">Asegurese de ingresar correctamente sus datos</small>
+                    <hr class="my-4">
+
                 </div>
             </div>
         </div>
@@ -66,3 +77,138 @@
 </body>
 
 </html>
+
+
+<script>
+
+    // const BASE_URL = 'http://localhost:3000';
+    // Producción
+    const BASE_URL = 'https://node-pm-proy.herokuapp.com';
+    
+
+    // #region jQuery - Document Ready y Submit
+
+    // $(document).ready(function() {
+    //     localStorage.removeItem("usuario");
+    //     localStorage.removeItem("parametro_busqueda");
+    //     localStorage.removeItem("estado");
+    // });
+
+
+    // Fuente: https://www.javatpoint.com/jquery-submit#:~:text=%E2%86%92%20%E2%86%90%20prev-,jQuery%20submit(),certain%20form%20elements%20have%20focus.
+    $( "#form_tarea" ).submit(async function( event ) {  
+        event.preventDefault();
+
+        document.getElementById("btnGuardar").disabled = true;
+
+
+        // Muestra el div que antes estaba oculto con display:none
+        // y escribe el mensaje que tendrá el div
+        setErrorVisibilidad("none", "")
+
+        // Fuente para arreglar serializeArray() vacío
+        // https://stackoverflow.com/questions/39808965/serializearray-gives-empty-array
+        var form_data_array = $('#form_tarea').serializeArray() // o también .serialize()
+
+        var values = {};
+        $.each(form_data_array, function(i, field) {
+            values[field.name] = field.value;
+        });
+
+        console.log({ values })
+
+        var num_cedula = $("#cedula").val()
+        // Fuente: https://stackoverflow.com/questions/1779013/check-if-string-contains-only-digits
+        // Este regex revisa si el campo cedula tiene solo números
+        let es_cedula = /^\d+$/.test(num_cedula);
+
+        if(!es_cedula) {
+            document.getElementById("btnGuardar").disabled = false;
+
+            return
+        }
+
+        const results = await insertarTarea(values);
+        // Descomposición de los elementos del diccionario 'results'
+        const { MsgOperacion, IdTarea } = results
+        console.log({ IdTarea })
+        console.log({ MsgOperacion })
+
+        if(IdTarea == -1) {
+            // Muestra el div que antes estaba oculto con display:none
+            // y escribe el mensaje que tendrá el div
+            setErrorVisibilidad("block", MsgOperacion)
+        } 
+
+        if(IdTarea == 0){
+            // Muestra el div que antes estaba oculto con display:none
+            // y escribe el mensaje que tendrá el div
+            setErrorVisibilidad("block", MsgOperacion)
+        }
+
+        document.getElementById("btnGuardar").disabled = false;
+
+        if(IdTarea > 0){
+            window.location.href = "dashboard.html";
+        }
+
+    });
+
+    // #endregion
+
+    
+    // #region Async Function - insertarTarea
+    
+    const insertarTarea = async tarea => {
+        try {
+            const API_ENTITY_TAREA = '/tarea';
+            const API_METHOD_POST = '/agregar';
+
+            const values = {}
+
+            const res = await axios.post(`${BASE_URL}${API_ENTITY_TAREA}${API_METHOD_POST}`, tarea, {
+                headers: {
+                    // Overwrite Axios's automatically set Content-Type
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const results = res.data.body
+
+            // Obtiene las keys de la variable results
+            let mapped_data = results.flatMap(x => Object.keys(x));
+
+            $.each(mapped_data, function(i, field) {
+                // let mapped_data = data.map(x => Object.keys(x)[0]);
+                console.log(mapped_data[i])
+                console.log(results[0][mapped_data[i]])
+
+                // mapped_data[i] = { "MsgOperacion", "IdTarea" }
+                values[mapped_data[i]] = results[0][mapped_data[i]]
+            });
+
+            console.log({ values })
+
+            return values
+
+        } catch (errors) {
+            console.error(errors);
+        }
+    };
+
+    // #endregion
+
+    // #region Method - setErrorVisibilidad
+
+    // display_style = none: Div de error se oculta
+    // display_style = block: Div de error se muestra en la pantalla
+    function setErrorVisibilidad(display_style, msg) {
+        document.getElementById("tarea_error").style.display = display_style;
+        // Escribe el mensaje que tendrá el div
+        document.getElementById("tarea_error").innerHTML = msg;
+    }
+
+    // #endregion
+
+
+</script>

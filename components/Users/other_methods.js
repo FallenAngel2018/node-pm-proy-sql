@@ -7,7 +7,7 @@ const controller = require('./controller')
 async function validate_user(req, res, entidad, origen_request) {
     const os = require('os')
     const dns = require('dns');
-    const show = true
+    const show = false
 
     // Fuente: https://stackoverflow.com/questions/40726568/how-to-grab-the-computer-name-with-nodejs-electron
     const hostname = os.hostname() || "None hostname?"// Computer name?

@@ -129,7 +129,7 @@
 
     // const BASE_URL = 'http://localhost:3000';
     // Producción
-    const BASE_URL = 'https://node-pm-proy.herokuapp.com';
+    const BASE_URL = 'https://node-pm-proy.herokuapp.com'; 
     
 
     // #region jQuery - Document Ready y Submit
@@ -147,7 +147,6 @@
         values["parametro_busqueda"] = $('#parametro_busqueda').val();
         
         const tasks = await get_tareas(values);
-        console.log({ tasks })
 
         // Write a local item..
         localStorage.setItem("parametro_busqueda", "");

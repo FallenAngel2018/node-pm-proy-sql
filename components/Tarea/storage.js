@@ -83,7 +83,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
             result = await conn.request()
                 .input('id_tarea', tarea.id_tarea) // 0: INSERTAR, 1: ACTUALIZAR
                 .input('cedula', tarea.cedula)
-                .input('cod_vivienda', tarea.cod_vivienda) // Int
+                .input('cod_vivienda', parseInt(tarea.cod_vivienda)) // Int
                 .input('direccion', tarea.direccion)
                 .input('manzana', tarea.manzana)
                 .input('villa', tarea.villa)
@@ -107,15 +107,13 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen)) //  VarBinary(Max)
                 .input('cod_medidor', tarea.cod_medidor)
                 .input('gps', tarea.gps)
-                .input('estado', tarea.estado) // 0: PENDIENTE, 1: COMPLETADO
+                .input('estado', parseInt(tarea.estado)) // 0: PENDIENTE, 1: COMPLETADO
                 .execute(`nb_tarea_crear_actualizar`);
         }
         
         const results = result.recordset;
         
         console.log(results);
-
-        
 
         return results
     } catch (error) {

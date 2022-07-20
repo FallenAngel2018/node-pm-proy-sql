@@ -93,8 +93,6 @@
           values[field.name] = field.value;
       });
 
-      console.log({ values })
-
       const results = await login_validation(values);
       // Descomposición de los elementos del diccionario 'results'
       const { login_success, usuario } = results
