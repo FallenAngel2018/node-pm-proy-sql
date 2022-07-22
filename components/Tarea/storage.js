@@ -43,8 +43,8 @@ async function obtenerTareas( tarea ) {
 
                 element["Imagen"] = img_varbinary
 
-                var x = element["Imagen"]
-                console.log({ x })
+                // var x = element["Imagen"]
+                // console.log({ x })
             }
             
             i++
