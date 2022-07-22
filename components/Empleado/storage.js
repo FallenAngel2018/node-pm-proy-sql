@@ -28,7 +28,9 @@ async function obtenerEmpleados( filtroEmp ) {
     }
 }
 
+
 async function loginEmpleado( filtroEmp ) {
+
     try {
         const conn = await pool.getConnection();
 
@@ -38,26 +40,58 @@ async function loginEmpleado( filtroEmp ) {
             .execute(`nb_empleado_login`);
 
         const results = result.recordset;
+        var response_arr = [];
 
         // Si la cédula del empleado no fue encontrada...
         if (results[0]["IdError"] == -1) {
             console.log(results[0]["MsgOperacion"])
             
+            console.log({ results })
             // return false
-            return {
+
+            const response_body = {
                 login_success: false,
                 usuario: results[0]["NombreUsuario"]
             }
+
+            // Si el login viene desde Android, devolverá
+            // un array en vez de un diccionario
+            if(filtroEmp.tipo_empleado == 0) {
+                response_arr.push(response_body["login_success"])
+                response_arr.push(response_body["usuario"])
+
+                return response_arr
+            }
+
+            return response_body
+            
         }
         
         const hash = { iv: results[0]["Clave_IV"], password: results[0]["Clave"] }
         const text = passwd_decrypt(hash, filtroEmp.clave);
+        console.log("login_success?:", text == filtroEmp.clave)
 
-        // return text == filtroEmp.clave
-        return {
+        // return {
+        //     login_success: text == filtroEmp.clave,
+        //     usuario: results[0]["NombreUsuario"]
+        // }
+
+        const response_body = {
             login_success: text == filtroEmp.clave,
             usuario: results[0]["NombreUsuario"]
         }
+        
+        // Si el login viene desde Android, devolverá
+        // un array en vez de un diccionario
+        if(filtroEmp.tipo_empleado == 0) {
+
+            response_arr.push(response_body["login_success"].toString())
+            response_arr.push(response_body["usuario"])
+
+            return response_arr
+        }
+
+        return response_body
 
     } catch(error) {
         console.log(error)

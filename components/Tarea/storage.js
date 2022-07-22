@@ -28,15 +28,23 @@ async function obtenerTareas( tarea ) {
 
             if(element["Imagen"] != null) {
                 var originalBase64ImageStr = Buffer.from(element["Imagen"], 'utf8');
-                decodedImage = originalBase64ImageStr.toString('base64');
+                // decodedImage = originalBase64ImageStr.toString('base64');
+                decodedImage = Buffer.from(originalBase64ImageStr, 'base64');
+                decodedImage2 = originalBase64ImageStr.toString('base64');
 
+                
                 // console.log({originalBase64ImageStr})
-                // console.log({decodedImage})
+                // console.log({ decodedImage })
+                // console.log({ decodedImage2 })
 
                 // const img_varbinary = `data:image/jpg;base64,${decodedImage}`
-                const img_varbinary = `data:image/png;base64,${decodedImage}`
+                // const img_varbinary = `data:image/png;base64,${decodedImage}`
+                const img_varbinary = `data:image/png;base64,${decodedImage2}`
 
                 element["Imagen"] = img_varbinary
+
+                var x = element["Imagen"]
+                console.log({ x })
             }
             
             i++
@@ -69,7 +77,6 @@ async function actualizarTarea( tarea ) {
 
 // Fuente: https://codeomelet.com/posts/calling-stored-procedure-with-nodejs-and-mssql
 const transaction_AgregarActualizar_Tarea = async (tarea) => {
-    
 
     try {
         const conn = await pool.getConnection();
@@ -87,6 +94,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 .input('direccion', tarea.direccion)
                 .input('manzana', tarea.manzana)
                 .input('villa', tarea.villa)
+                .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen)) //  VarBinary(Max)
                 .execute(`nb_tarea_crear_actualizar`); // Se crea con estado 0 = Pendiente
         }
 
