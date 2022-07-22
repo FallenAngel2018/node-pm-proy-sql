@@ -6,6 +6,15 @@ function obtenerTareas( filtroTarea ) {
     })
 }
 
+function agregarFoto( tarea ) {
+    return new Promise((resolve, reject) => {
+        if (tarea == null) {
+            return reject('Ingrese una imagen.')
+        }
+        resolve( storage.upload( tarea ) )
+    })
+}
+
 function agregarTarea( tarea ) {
     return new Promise((resolve, reject) => {
         if (tarea.id_tarea == null) {
@@ -30,6 +39,7 @@ function actualizarTarea( tarea ) {
 module.exports = {
     obtenerTareas,
     agregarTarea,
+    agregarFoto,
     actualizarTarea,
 
     // eliminarEmpleado,

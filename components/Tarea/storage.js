@@ -1,6 +1,7 @@
 const pool = require('../../bd')
 const sql = require('mssql');
-const dns = require('dns')
+const dns = require('dns');
+// const { agregarFoto } = require('./controller');
 require("dotenv").config(); // Carga variables de entorno
 
 // FALTA GET
@@ -63,6 +64,12 @@ async function obtenerTareas( tarea ) {
 
 // Agregar y Actualizar van separados
 // Se unen a un solo método aparte definido más abajo
+async function agregarFoto( tarea ) {
+    return await transaction_AgregarActualizar_Tarea(tarea)
+}
+
+// Agregar y Actualizar van separados
+// Se unen a un solo método aparte definido más abajo
 async function agregarTarea( tarea ) {
     return await transaction_AgregarActualizar_Tarea(tarea)
 }
@@ -78,6 +85,8 @@ async function actualizarTarea( tarea ) {
 // Fuente: https://codeomelet.com/posts/calling-stored-procedure-with-nodejs-and-mssql
 const transaction_AgregarActualizar_Tarea = async (tarea) => {
 
+    console.log({ tarea })
+
     try {
         const conn = await pool.getConnection();
 
@@ -85,7 +94,6 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
 
         // INSERTAR
         if (tarea.id_tarea == 0) {
-            console.log({ tarea })
 
             result = await conn.request()
                 .input('id_tarea', tarea.id_tarea) // 0: INSERTAR, 1: ACTUALIZAR
@@ -94,12 +102,18 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 .input('direccion', tarea.direccion)
                 .input('manzana', tarea.manzana)
                 .input('villa', tarea.villa)
+                // Prueba para plataforma web
                 .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen)) //  VarBinary(Max)
+                // En web: image/jpg, image/png, image/jpeg
+                // En Android: ??? 
+                .input('imagen_tipo', tarea.imagen_tipo)
                 .execute(`nb_tarea_crear_actualizar`); // Se crea con estado 0 = Pendiente
         }
 
         // ACTUALIZAR
         if (tarea.id_tarea >= 1) {
+            console.log({ tarea })
+
             result = await conn.request()
                 .input('id_tarea', tarea.id_tarea) // 0: INSERTAR, 1: ACTUALIZAR
                 .input('cedula', tarea.cedula)
@@ -113,6 +127,9 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 // Fuente: https://stackoverflow.com/questions/50990572/requesterror-validation-failed-for-parameter-invalid-buffer
                 // Fuente: https://nodejs.org/en/docs/guides/buffer-constructor-deprecation/
                 .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen)) //  VarBinary(Max)
+                // En web: image/jpg, image/png, image/jpeg
+                // En Android: ??? 
+                .input('imagen_tipo', tarea.imagen_tipo)
                 .input('cod_medidor', tarea.cod_medidor)
                 .input('gps', tarea.gps)
                 .input('estado', parseInt(tarea.estado)) // 0: PENDIENTE, 1: COMPLETADO
@@ -124,6 +141,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
         console.log(results);
 
         return results
+
     } catch (error) {
         console.log(error)
 
@@ -136,6 +154,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
 module.exports = {
     obtener: obtenerTareas,
     agregar: agregarTarea,
+    upload: agregarFoto,
     actualizar: actualizarTarea,
 
     // eliminar: eliminarEmpleado,

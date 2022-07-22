@@ -56,7 +56,7 @@ async function validate_user( emp ) {
 
             transaction.commit(err => {
                 // ... error checks
-                console.log("Transaction committed.")
+                // console.log("Transaction committed.")
             })
         })
     })

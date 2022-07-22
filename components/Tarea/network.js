@@ -32,9 +32,24 @@ routes.post('/', function(req, res) {
         .catch((error) => response.error(req, res, error) )
 })
 
+routes.post('/subir_imagen', function(req, res) {
+
+    console.log({ p })
+    console.log({ q })
+
+    controller.agregarTarea( req.body )
+        .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
+        .catch((error) => response.error(req, res, error) )
+})
+
 routes.post('/agregar', function(req, res) {
 
-    usrs.validar(req, res, entidad, "/agregar")
+    // usrs.validar(req, res, entidad, "/agregar")
+
+    var p = req.body
+    var q = req
+    console.log({ p })
+    console.log({ q })
 
     controller.agregarTarea( req.body )
         .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
