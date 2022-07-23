@@ -6,6 +6,9 @@ const routes = require('./network/routes')
 
 const path = require('path');
 
+// const multer = require('multer');
+// const upload = multer();
+
 // require("dotenv").config();
 
 var app = express()
@@ -15,6 +18,10 @@ app.use( bodyParser.urlencoded({extended:false}) )
 // Redirecciona hacia un index.html 
 // app.use( config.CLIENT_URL, express.static(config.CLIENT_DIR) )
 // app.use(express.static('public')) // http://localhost:3000/inedx.html
+
+// Fuente: https://stackoverflow.com/questions/56758241/node-js-express-how-to-get-data-from-body-form-data-in-post-request
+// for parsing multipart/form-data
+// app.use(upload.array()); 
 
 app.use(express.static( path.join(__dirname, config.CLIENT_DIR), { index: 'inedx.html' } ))
 

@@ -4,6 +4,16 @@ const response = require('../../network/response')
 const usrs = require('../Users/other_methods')
 const routes = express.Router()
 
+// const img_dir = "../../uploads/"
+const img_dir = "uploads/"
+var multer  = require('multer');
+var upload = multer({ dest: img_dir });
+var fs = require('fs');
+
+/** Permissible loading a single file, 
+    the value of the attribute "name" in the form of "recfile". **/
+var type = upload.single('imagen');
+
 /* 
     // En Node.js
     // Fuente: https://stackoverflow.com/questions/41042527/node-js-how-to-convert-to-image-from-varbinary-of-ms-sql-server-datatype
@@ -32,24 +42,50 @@ routes.post('/', function(req, res) {
         .catch((error) => response.error(req, res, error) )
 })
 
-routes.post('/subir_imagen', function(req, res) {
+// routes.post('/subir_imagen', type, function(req, res) {
 
-    console.log({ p })
-    console.log({ q })
+//     console.log({ type })
 
-    controller.agregarTarea( req.body )
-        .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
-        .catch((error) => response.error(req, res, error) )
-})
+//     controller.agregarFoto( req.body )
+//         .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
+//         .catch((error) => response.error(req, res, error) )
+// })
+// Fuente: https://stackoverflow.com/questions/31530200/node-multer-unexpected-field
+routes.post('/subir_imagen', type, function (req, res) {
+
+    // controller.agregarFoto( req.body )
+    //     .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
+    //     .catch((error) => response.error(req, res, error) )
+
+    /** When using the "single"
+        data come in "req.file" regardless of the attribute "name". **/
+    var tmp_path = req.file.path;
+  
+    /** The original name of the uploaded file
+        stored in the variable "originalname". **/
+    var target_path = img_dir + req.file.originalname;
+    // var target_path = 'uploads/' + req.file.originalname;
+  
+    /** A better way to copy the uploaded file. **/
+    var src = fs.createReadStream(tmp_path);
+    var dest = fs.createWriteStream(target_path);
+    src.pipe(dest);
+
+    src.on('end', function() {
+        const data = { path: target_path }
+
+        response.success(req, res, data, response.success_message())
+    });
+    src.on('error', function(err) { 
+        response.error(req, res, error)
+    });
+  
+});
+  
 
 routes.post('/agregar', function(req, res) {
 
-    // usrs.validar(req, res, entidad, "/agregar")
-
-    var p = req.body
-    var q = req
-    console.log({ p })
-    console.log({ q })
+    usrs.validar(req, res, entidad, "/agregar")
 
     controller.agregarTarea( req.body )
         .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
