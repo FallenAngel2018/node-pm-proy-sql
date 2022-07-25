@@ -14,22 +14,6 @@ var fs = require('fs');
     the value of the attribute "name" in the form of "recfile". **/
 var type = upload.single('imagen');
 
-/* 
-    // En Node.js
-    // Fuente: https://stackoverflow.com/questions/41042527/node-js-how-to-convert-to-image-from-varbinary-of-ms-sql-server-datatype
-    var originalBase64ImageStr = Buffer.from(imagen_varbinary_de_sql, 'utf8');
-    decodedImage = originalBase64ImageStr.toString('base64');
-
-    console.log({originalBase64ImageStr})
-    console.log({decodedImage})
-
-    const img_varbinary = `data:image/jpg;base64,${decodedImage}`
-
-
-    // En html
-    <img src="{ img_varbinary }"/>
-
-*/
 
 // routes.get
 routes.post('/', function(req, res) {
