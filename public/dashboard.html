@@ -89,6 +89,8 @@
                 </select>
             </div>
 
+
+
             <thead>
                 <tr>
                     <th scope="col"></th>
@@ -145,9 +147,9 @@
         para que no se vea mal y se parezca más a como se ve en localhost
     */
 
-    // const BASE_URL = 'http://localhost:3000';
+    const BASE_URL = 'http://localhost:3000';
     // Producción
-    const BASE_URL = 'https://node-pm-proy.herokuapp.com';
+    // const BASE_URL = 'https://node-pm-proy.herokuapp.com';
     
 
     // #region jQuery - Document Ready y Submit
@@ -163,6 +165,7 @@
 
         const values = {}
         values["parametro_busqueda"] = $('#parametro_busqueda').val();
+        values["tipo_empleado"] = 1; // ADMIN
         
         const tasks = await get_tareas(values);
 
@@ -170,7 +173,10 @@
         localStorage.setItem("parametro_busqueda", "");
         localStorage.setItem("estado", "505");
 
-        fill_table(tasks)
+        if( tasks ) {
+            fill_table(tasks)
+        }
+
 
     });
 
@@ -186,6 +192,7 @@
         $.each(form_data_array, function(i, field) {
             values[field.name] = field.value;
         });
+        // values["tipo_empleado"] = 1; // ADMIN
 
         console.log({ values })
 
@@ -222,9 +229,12 @@
         console.log("PROCESO DE BÚSQUEDA INICIADO")
 
         const tasks = await get_tareas(values);
+        // const tasks = { MsgOperacion: "Prueba de error", IdTarea: -1 }
         console.log({ tasks })
 
-        fill_table(tasks)
+        if( tasks ) {
+            fill_table(tasks)
+        }
 
         
 

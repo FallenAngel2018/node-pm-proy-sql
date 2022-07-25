@@ -16,7 +16,7 @@ async function obtenerTareas( tarea ) {
 
     try {
         const result = await conn.request()
-        // .input('id_empleado', tarea.id_empleado)
+        .input('id_tarea', tarea.id_tarea ? parseInt(tarea.id_tarea) : null)
         .input('cedula_nombre', tarea.parametro_busqueda)
         .input('tipo_empleado', parseInt(tarea.tipo_empleado)) // 0: Normal, 1: Admin
         .input('estado_tarea', tarea.estado != 'null' ? tarea.estado : null) // 0: PENDIENTE, 1: COMPLETADO, null = Todas las tareas???
@@ -25,50 +25,54 @@ async function obtenerTareas( tarea ) {
         const results = result.recordset;
         // console.log({ results })
 
-        let i = 0
-        results.forEach(element => {
-            // Este vuelve como un String, en vez de como un Integer
-            element["IdTarea"] = parseInt(results[i]["IdTarea"])
-            // En este campo, los resultados volvían como [ '1', '1' ], en vez de solo un Int 1
-            element["IdEmpleado"] = parseInt(results[i]["IdEmpleado"][0])
+        if(results) {
+            let i = 0
+            results.forEach(element => {
+                // Este vuelve como un String, en vez de como un Integer
+                element["IdTarea"] = parseInt(results[i]["IdTarea"])
+                // En este campo, los resultados volvían como [ '1', '1' ], en vez de solo un Int 1
+                element["IdEmpleado"] = parseInt(results[i]["IdEmpleado"][0])
 
-            if(element["Imagen"] != null) {
-                var originalBase64ImageStr = Buffer.from(element["Imagen"], 'utf8');
-                // decodedImage = originalBase64ImageStr.toString('base64');
-                decodedImage = Buffer.from(originalBase64ImageStr, 'base64');
-                decodedImage2 = originalBase64ImageStr.toString('base64');
+                if(element["Imagen"] != null) {
+                    var originalBase64ImageStr = Buffer.from(element["Imagen"], 'utf8');
+                    // decodedImage = originalBase64ImageStr.toString('base64');
+                    decodedImage = Buffer.from(originalBase64ImageStr, 'base64');
+                    decodedImage2 = originalBase64ImageStr.toString('base64');
 
-                const b64 = Buffer.from(element["Imagen"]).toString('base64');
+                    const b64 = Buffer.from(element["Imagen"]).toString('base64');
 
-                // console.log({originalBase64ImageStr})
-                // console.log({ decodedImage })
-                // console.log({ decodedImage2 })
+                    // console.log({originalBase64ImageStr})
+                    // console.log({ decodedImage })
+                    // console.log({ decodedImage2 })
 
-                // const img_varbinary = `data:image/jpg;base64,${decodedImage}`
-                // const img_varbinary = `data:image/png;base64,${decodedImage}`
-                const ext = element["Extension"]
-                var img_varbinary = `data:image/png;base64,${b64}`; // decodedImage2
-                console.log({ ext })
-                // console.log({ b64 })
-                var str = b64.substring(0,30);
-                console.log({ str })
+                    // const img_varbinary = `data:image/jpg;base64,${decodedImage}`
+                    // const img_varbinary = `data:image/png;base64,${decodedImage}`
+                    const ext = element["Extension"]
+                    var img_varbinary = `data:image/png;base64,${b64}`; // decodedImage2
+                    console.log({ ext })
+                    // console.log({ b64 })
+                    var str = b64.substring(0,30);
+                    console.log({ str })
 
 
-                if (ext != "" && ext) {
-                    img_varbinary = `data:image/${ext};base64,${b64}`; // decodedImage2
+                    if (ext != "" && ext) {
+                        img_varbinary = `data:image/${ext};base64,${b64}`; // decodedImage2
+                    }
+
+                    element["Imagen"] = img_varbinary;
+
+                    // var x = element["Imagen"]
+                    // console.log({ x })
                 }
+                
+                i++
+            });
 
-                element["Imagen"] = img_varbinary;
+            return results;
 
-                // var x = element["Imagen"]
-                // console.log({ x })
-            }
-            
-            i++
-        });
+        }
 
-
-        return results;
+        return {}
 
     } catch(error) {
         console.log(error);
