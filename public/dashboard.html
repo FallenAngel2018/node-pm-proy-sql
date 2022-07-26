@@ -338,9 +338,13 @@
             // `<button id="image_button_${i+1}"
             //     onclick="show_photo(this)" value="${item.Imagen}"
             //         class="btn btn-primary">Ver Imagen</button>`
+            item.Imagen ? 
             `<button class="btn btn-primary"
                 value="${item.Imagen}"
-                    onclick="show_photo(this)">Ver Imagen</button>`;
+                    onclick="show_photo(this)">Ver Imagen</button>`
+            :
+            `<button class="btn btn-primary"
+                disabled>Ver Imagen</button>`;
             // `<a class="btn btn-primary"
             //     href="${item.Imagen}" data-toggle="modal"
             //         data-target="#exampleModal"

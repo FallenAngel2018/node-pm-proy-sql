@@ -33,22 +33,22 @@
 
                         <div class="form-floating mb-3">
                             <input type="number" class="form-control rounded-3" id="cod_vivienda"
-                                name="cod_vivienda" placeholder="ejemplo: 478569" value="1025">
-                            <label for="cod_vivienda">Codigo de vivienda</label>
+                                name="cod_vivienda" placeholder="ejemplo: 478569">
+                            <label for="cod_vivienda">Código de vivienda</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control rounded-3" id="direccion"
-                                name="direccion" placeholder="ejemplo: Centenario" value="Prueba Tarea">
+                                name="direccion" placeholder="ejemplo: Centenario">
                             <label for="direccion">Dirección</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control rounded-3" id="manzana"
-                                name="manzana" placeholder="ejemplo: 40A" value="74F">
+                                name="manzana" placeholder="ejemplo: 40A">
                             <label for="manzana">Manzana</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control rounded-3" id="villa"
-                                name="villa" placeholder="ejemplo: 50" value="3">
+                                name="villa" placeholder="ejemplo: 50">
                             <label for="villa">Villa</label>
                         </div>
                         <div class="form-floating mb-3">
@@ -59,13 +59,14 @@
                         
                         <div class="form-floating mb-3">
                             <input type="search" class="form-control rounded-3" id="cedula"
-                                value="0987654321" name="cedula"
+                                name="cedula"
                                 placeholder="Ingrese numero de cedula del empleado">
                             <label for="cedula">Responsable</label>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <button id="btnGuardar" class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Guardar</button>
+                            <button id="btnGuardar" class="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
+                                type="submit">Guardar</button>
                         </div>
 
                     </form>
@@ -129,12 +130,22 @@
             
             // console.log({ values })
 
+            if(Number.isInteger(values["cod_vivienda"])) {
+                setErrorVisibilidad("block", "El campo 'Código de vivienda' no es un número entero.")
+
+                document.getElementById("btnGuardar").disabled = false;
+
+                return
+            }
+
             var num_cedula = $("#cedula").val()
             // Fuente: https://stackoverflow.com/questions/1779013/check-if-string-contains-only-digits
             // Este regex revisa si el campo cedula tiene solo números
             let es_cedula = /^\d+$/.test(num_cedula);
 
             if(!es_cedula) {
+                setErrorVisibilidad("block", "Ingrese una cédula válida.")
+
                 document.getElementById("btnGuardar").disabled = false;
 
                 return
@@ -197,12 +208,12 @@
                 setErrorVisibilidad("block", MsgOperacion)
             }
 
-            document.getElementById("btnGuardar").disabled = false;
-
             if(IdTarea > 0){
                 window.location.href = "dashboard.html";
                 return
             }
+
+            document.getElementById("btnGuardar").disabled = false;
 
         } catch (error) {
             console.log({ error })

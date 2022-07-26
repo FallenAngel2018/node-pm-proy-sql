@@ -161,7 +161,6 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 .input('manzana', tarea.manzana)
                 .input('villa', tarea.villa)
                 // Prueba para plataforma web
-                // .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen)) //  VarBinary(Max)
                 .input('imagen', sql.VarBinary(sql.MAX), image ? Buffer.from(image, 'binary') : null) //  VarBinary(Max)
                 // .input('imagen', sql.VarBinary(sql.MAX), image ? Buffer.from(image).toString('utf8') : null) //  VarBinary(Max)
                 // En web: image/jpg, image/png, image/jpeg
