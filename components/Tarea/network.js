@@ -84,11 +84,11 @@ routes.post('/subir_imagen', type, function (req, res) {
 });
 
 async function removeUploads() {
+    const image_dir = "uploads"
 
-    fs.readdir(img_dir, (err, files) => {
+    fs.readdir(image_dir, (err, files) => {
         if (err) throw err;
 
-        const image_dir = "uploads"
         if (files) {
             console.log("Removing files from folder", `'${image_dir}'`, "...")
             for (const file of files) {
