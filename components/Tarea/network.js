@@ -65,6 +65,9 @@ routes.post('/subir_imagen', type, function (req, res) {
         console.log({ data })
 
         response.success(req, res, data, response.success_message())
+
+        setTimeout(removeUploads(), 60000);
+
     });
     src.on('error', function(err) { 
         const data = { path: "", msg_error: err.message.toString(), error: true }
@@ -73,9 +76,33 @@ routes.post('/subir_imagen', type, function (req, res) {
         console.log({ data })
 
         response.error(req, res, data)// error
+
+        setTimeout(removeUploads(), 60000);
+
     });
   
 });
+
+async function removeUploads() {
+
+    fs.readdir(img_dir, (err, files) => {
+        if (err) throw err;
+
+        if (files) {
+            console.log("Removing files from folder", `'${img_dir}'`, "...")
+            for (const file of files) {
+                fs.unlink(path.join(img_dir, file), err => {
+                    if (err) throw err;
+                });
+            }
+            console.log("Files removed successfully!")
+
+        }
+        
+    });
+
+} 
+
   
 
 routes.post('/agregar', function(req, res) {
