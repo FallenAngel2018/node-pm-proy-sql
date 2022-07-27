@@ -197,7 +197,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 // Fuente: https://stackoverflow.com/questions/50990572/requesterror-validation-failed-for-parameter-invalid-buffer
                 // Fuente: https://nodejs.org/en/docs/guides/buffer-constructor-deprecation/
                 // Fuente Buffer.from(tarea.imagen, 'binary'): https://stackoverflow.com/questions/34383938/how-to-insert-binary-data-into-sql-server-using-node-mssql
-                .input('imagen', sql.VarBinary(sql.MAX), Buffer.from(tarea.imagen, 'binary')) //  VarBinary(Max)
+                .input('imagen', sql.VarBinary(sql.MAX), image ? Buffer.from(image, 'binary') : null) //  VarBinary(Max)
                 // En web: image/jpg, image/png, image/jpeg 
                 // En Android: ??? 
                 .input('imagen_tipo', tarea.imagen_tipo ? tarea.imagen_tipo : "")

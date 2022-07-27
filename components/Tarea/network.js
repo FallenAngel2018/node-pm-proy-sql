@@ -36,6 +36,7 @@ routes.post('/', function(req, res) {
 // })
 // Fuente: https://stackoverflow.com/questions/31530200/node-multer-unexpected-field
 routes.post('/subir_imagen', type, function (req, res) {
+    console.log("Método subir_imagen")
 
     // controller.agregarFoto( req.body )
     //     .then((data) => response.success(req, res, data, data[0]["MsgOperacion"]))
@@ -44,11 +45,13 @@ routes.post('/subir_imagen', type, function (req, res) {
     /** When using the "single"
         data come in "req.file" regardless of the attribute "name". **/
     var tmp_path = req.file.path;
+    console.log({ tmp_path })
   
     /** The original name of the uploaded file
         stored in the variable "originalname". **/
     var target_path = img_dir + req.file.originalname;
     // var target_path = 'uploads/' + req.file.originalname;
+    console.log({ target_path })
   
     /** A better way to copy the uploaded file. **/
     var src = fs.createReadStream(tmp_path);
@@ -58,10 +61,17 @@ routes.post('/subir_imagen', type, function (req, res) {
     src.on('end', function() {
         const data = { path: target_path, error: false }
 
+        console.log("Sin error")
+        console.log({ data })
+
         response.success(req, res, data, response.success_message())
     });
     src.on('error', function(err) { 
         const data = { msg_error: err, error: true }
+
+        console.log("CON error")
+        console.log({ data })
+
         response.error(req, res, data)// error
     });
   
