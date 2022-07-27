@@ -51,11 +51,11 @@
                                 name="villa" placeholder="ejemplo: 50">
                             <label for="villa">Villa</label>
                         </div>
-                        <div class="form-floating mb-3">
+                        <!-- <div class="form-floating mb-3">
                             <input type="file" class="form-control rounded-3" id="imagen"
                                 name="imagen" accept=".jpg,.jpeg,.png">
                             <label for="imagen">Imagen Prueba</label>
-                        </div>
+                        </div> -->
                         
                         <div class="form-floating mb-3">
                             <input type="search" class="form-control rounded-3" id="cedula"
@@ -153,7 +153,9 @@
 
             var imagefile = document.querySelector('#imagen');
 
-            if (imagefile.files.length > 0) {
+            console.log({ imagefile })
+
+            if (imagefile && imagefile.files.length > 0) {
                 var image = imagefile.files[0];
                 console.log({ image })
                 var imagen_permitida = image.type == 'image/jpeg'
@@ -169,10 +171,6 @@
                     return
                 }
 
-                // formData.append("image", image);
-                // formData.append("image", imagefile.files[0]);
-                // console.log({ formData })
-                // values["imagen"] = image
                 values["imagen_tipo"] = image.type
                 formData.append("imagen", image);
                 // formData.append("imagen_tipo", image.type);
@@ -238,7 +236,6 @@
                 headers: {
                     // Overwrite Axios's automatically set Content-Type
                     'Content-Type': 'application/json'
-                    // 'Content-Type': 'multipart/form-data'
                 }
             });
 
@@ -250,10 +247,6 @@
             let mapped_data = results.flatMap(x => Object.keys(x));
 
             $.each(mapped_data, function(i, field) {
-                // let mapped_data = data.map(x => Object.keys(x)[0]);
-                // console.log(mapped_data[i])
-                // console.log(results[0][mapped_data[i]])
-
                 // mapped_data[i] = { "MsgOperacion", "IdTarea" }
                 values[mapped_data[i]] = results[0][mapped_data[i]]
             });

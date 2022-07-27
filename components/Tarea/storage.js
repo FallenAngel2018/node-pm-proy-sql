@@ -131,19 +131,6 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
             if(tarea.path && tarea.path.length > 0) image = fs.readFileSync(tarea.path);
             // var image = fs.readFile(tarea.path);
 
-            // fs.readFile(tarea.path, function(err, data) {
-            //     // if (err) throw err // Fail if the file can't be read.
-            //     if (err) {
-            //         console.log("err:")
-            //         console.log({ err })
-            //         throw err // Fail if the file can't be read.
-            //     }
-            //     console.log({ data })
-            //     tarea["imagen"] = data
-            //     image = data
-            //     // tarea.imagen = data
-            // })
-
             // console.log({ image })
 
             if(tarea.imagen_tipo) {

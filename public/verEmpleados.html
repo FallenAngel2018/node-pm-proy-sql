@@ -171,7 +171,6 @@
         var localSt_parametro_busqueda = localStorage.getItem("search_parametro_busqueda");
         var localSt_tipo_emp = localStorage.getItem("search_tipo_empleado");
 
-        // console.log("parametro_busqueda:",parametro_busqueda)
 
         // Para ahorrar tiempo de búsqueda y no sobrecargar con peticiones repetidas
         // a la base de datos, solo se inicia el proceso cuando los parámetros
@@ -224,15 +223,11 @@
             });
 
             $.each(res.data.body, function(i, field) {
-                // console.log({ field })
-                // console.log(field["Cedula"])
-
                 values[field.name] = field.value;
             });
 
             const empleados = res.data.body
             console.log({ empleados })
-            // console.log({ values })
 
             return empleados
 

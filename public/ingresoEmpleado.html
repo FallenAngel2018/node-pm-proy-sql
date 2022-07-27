@@ -113,8 +113,6 @@
             var tipo_op = parseInt($("#tipo_operacion").val());
 
             const values = { id_empleado: id }
-            console.log({ values })
-            
             const employees = await getEmpleados(values);
             const employee = employees[0]
 
@@ -301,9 +299,6 @@
             let mapped_data = results.flatMap(x => Object.keys(x));
 
             $.each(mapped_data, function(i, field) {
-                // let mapped_data = data.map(x => Object.keys(x)[0]);
-                // console.log(results[0][mapped_data[i]])
-
                 // mapped_data[i] = { "MsgOperacion", "IdEmpleado" }
                 values[mapped_data[i]] = results[0][mapped_data[i]]
             });
