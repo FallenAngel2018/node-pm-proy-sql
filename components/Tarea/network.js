@@ -56,12 +56,13 @@ routes.post('/subir_imagen', type, function (req, res) {
     src.pipe(dest);
 
     src.on('end', function() {
-        const data = { path: target_path }
+        const data = { path: target_path, error: false }
 
         response.success(req, res, data, response.success_message())
     });
     src.on('error', function(err) { 
-        response.error(req, res, error)
+        const data = { msg_error: err, error: true }
+        response.error(req, res, data)// error
     });
   
 });
