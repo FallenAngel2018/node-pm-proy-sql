@@ -88,10 +88,11 @@ async function removeUploads() {
     fs.readdir(img_dir, (err, files) => {
         if (err) throw err;
 
+        const image_dir = "uploads"
         if (files) {
-            console.log("Removing files from folder", `'${img_dir}'`, "...")
+            console.log("Removing files from folder", `'${image_dir}'`, "...")
             for (const file of files) {
-                fs.unlink(path.join(img_dir, file), err => {
+                fs.unlink(path.join(image_dir, file), err => {
                     if (err) throw err;
                 });
             }
