@@ -59,7 +59,7 @@ routes.post('/subir_imagen', type, function (req, res) {
     src.pipe(dest);
 
     src.on('end', function() {
-        const data = { path: target_path, error: false }
+        const data = { path: target_path, msg_error: "", error: false }
 
         console.log("Sin error")
         console.log({ data })
@@ -67,7 +67,7 @@ routes.post('/subir_imagen', type, function (req, res) {
         response.success(req, res, data, response.success_message())
     });
     src.on('error', function(err) { 
-        const data = { msg_error: err, error: true }
+        const data = { path: target_path, msg_error: err.message, error: true }
 
         console.log("CON error")
         console.log({ data })
