@@ -66,7 +66,7 @@ routes.post('/subir_imagen', type, function (req, res) {
 
         response.success(req, res, data, response.success_message())
 
-        setTimeout(removeUploads(), 60000);
+        setTimeout(removeUploads, 60000);
 
     });
     src.on('error', function(err) { 
@@ -77,7 +77,8 @@ routes.post('/subir_imagen', type, function (req, res) {
 
         response.error(req, res, data)// error
 
-        setTimeout(removeUploads(), 60000);
+        setTimeout(removeUploads, 60000);
+         
     });
   
 });
