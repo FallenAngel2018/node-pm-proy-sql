@@ -190,7 +190,7 @@ const transaction_AgregarActualizar_Tarea = async (tarea) => {
                 .input('imagen_tipo', tarea.imagen_tipo ? tarea.imagen_tipo : "")
                 .input('cod_medidor', tarea.cod_medidor.toString())
                 .input('gps', tarea.gps)
-                .input('estado', parseInt(tarea.estado)) // 0: PENDIENTE, 1: COMPLETADO
+                .input('estado', parseInt(tarea.estado.toString().trim())) // 0: PENDIENTE, 1: COMPLETADO
                 .execute(`nb_tarea_crear_actualizar`);
         }
         
