@@ -65,6 +65,8 @@
                 </li>
             </ul>
             <form id="form_busqueda" class="form-inline my-2 my-lg-0">
+                <input type="hidden" id="tipo_empleado" name="tipo_empleado" value="1">
+
                 <label for="parametro_busqueda" class="form-control mr-sm-2">Cédula o Nombre</label>
                 <input id="parametro_busqueda" name="parametro_busqueda"
                     class="form-control mr-sm-2" type="search" placeholder="Buscar" aria-label="Search">
@@ -148,9 +150,9 @@
         para que no se vea mal y se parezca más a como se ve en localhost
     */
 
-    const BASE_URL = 'http://localhost:3000';
+    // const BASE_URL = 'http://localhost:3000';
     // Producción
-    // const BASE_URL = 'https://node-pm-proy.herokuapp.com';
+    const BASE_URL = 'https://node-pm-proy.herokuapp.com';
     
 
     // #region jQuery - Document Ready y Submit
@@ -264,6 +266,7 @@
 
             const values = {}
             values["parametro_busqueda"] = $('#parametro_busqueda').val();
+            // values["tipo_empleado"] = $('#tipo_empleado').val();
 
 
             const res = await axios.post(`${BASE_URL}${API_ENTITY_TAREA}${API_METHOD_GET}`, tarea, {
