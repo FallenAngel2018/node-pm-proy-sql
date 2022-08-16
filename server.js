@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const config = require('./config')
@@ -11,10 +12,37 @@ const path = require('path');
 
 // require("dotenv").config();
 
+
+
 var app = express()
 
 app.use( bodyParser.json() )
 app.use( bodyParser.urlencoded({extended:false}) )
+
+var allowlist = ['http://localhost:58809',
+'http://localhost:56649',
+'http://localhost:56649',
+]
+var corsOptionsDelegate = function (req, callback) {
+    var corsOptions;
+    if (allowlist.indexOf(req.header('Origin')) !== -1) {
+        corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
+    } else {
+        corsOptions = { origin: false } // disable CORS for this request
+    }
+    callback(null, corsOptions) // callback expects two parameters: error and options
+}
+
+var corsOptions = {
+    origin: 'http:localhost',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+// Fuente: https://expressjs.com/en/resources/middleware/cors.html
+// Simple Usage (Enable All CORS Requests)
+// app.use(cors())
+app.use(cors(corsOptionsDelegate)); // corsOptions
+
 // Redirecciona hacia un index.html 
 // app.use( config.CLIENT_URL, express.static(config.CLIENT_DIR) )
 // app.use(express.static('public')) // http://localhost:3000/inedx.html
