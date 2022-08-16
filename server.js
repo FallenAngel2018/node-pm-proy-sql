@@ -21,7 +21,7 @@ app.use( bodyParser.urlencoded({extended:false}) )
 
 var allowlist = ['http://localhost:58809',
 'http://localhost:56649',
-'http://localhost:56649',
+'http://localhost:64333',
 ]
 var corsOptionsDelegate = function (req, callback) {
     var corsOptions;
