@@ -40,8 +40,8 @@ var corsOptions = {
 
 // Fuente: https://expressjs.com/en/resources/middleware/cors.html
 // Simple Usage (Enable All CORS Requests)
-// app.use(cors())
-app.use(cors(corsOptionsDelegate)); // corsOptions
+app.use(cors());
+// app.use(cors(corsOptionsDelegate)); // corsOptions
 
 // Redirecciona hacia un index.html 
 // app.use( config.CLIENT_URL, express.static(config.CLIENT_DIR) )
